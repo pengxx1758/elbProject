@@ -1,16 +1,31 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    
   </div>
 </template>
 
 <script>
+import qs from "qs";
+
 export default {
   name: 'HelloWorld',
   data () {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  created(){
+    let url = this.HOST + '/getJson';
+    this.$http.get(url,{
+      
+    })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {
+      console.log(error);
+    })
   }
 }
 </script>

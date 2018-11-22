@@ -1,7 +1,6 @@
-import axios from 'axios'
-
+import axios from 'axios';
 const ENV = {
-    test :"http://localhost:3000",
+    test :"http://localhost:8081",
     dev : "",
     pro : ""
 }
@@ -13,5 +12,15 @@ export function login(userInfo){
             username: userInfo.name,
             password: userInfo.password
         }
+    })
+}
+
+export function test(){
+    return axios.post(now+"/listCategorytoJson")
+    .then(res => {
+        console.log(res);
+    })
+    .catch(error => {
+        console.log(error);
     })
 }

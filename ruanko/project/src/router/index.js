@@ -4,13 +4,12 @@ import HelloWorld from '@/components/HelloWorld'
 import home from '@/components/home'
 import {getName} from "@/util/auth";
 Vue.use(Router)
-//hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
-//heiheiheiheihie 
+
 const route = new Router({
-  mode:"hash",
+  mode:"history",
   routes: [
     {
-      path: '/',
+      path: '/helloworld',
       name: 'HelloWorld',
       component: HelloWorld
     },
