@@ -50,21 +50,21 @@
 
         
       </el-header>
-      <el-main>
+      <el-container>
         <el-aside>
-          <el-menu :default-active="activeIndex" class="el-menu-demo" mode="vertical" @select="handleSelect">
+          <el-menu router="true" :default-active="activeIndex" class="el-menu-demo" mode="vertical" @select="handleSelect">
             <el-menu-item index="1">首页</el-menu-item>
             <el-menu-item index="2">个人中心</el-menu-item>
+            <el-menu-item index="/home">Home</el-menu-item>
+            <el-menu-item index="/HelloWorld">HelloWorld</el-menu-item>
           </el-menu>
         </el-aside> 
         <el-main>
-          <router-link to="/home">Home</router-link>
-        </el-main> 
-        
-      </el-main>
+          <router-view/>  
+        </el-main>
+      </el-container> 
     </el-container>
 
-    <router-view/>
 
     
   </div>  
