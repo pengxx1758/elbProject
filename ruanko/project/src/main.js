@@ -14,6 +14,7 @@ let bus = new Vue()
 Vue.prototype.$bus= bus
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/idea'
+Vue.prototype.$isLogin = true;
 Vue.use(ElementUI);
 
 axios.interceptors.request.use(function (config) {
@@ -24,7 +25,7 @@ axios.interceptors.request.use(function (config) {
   return config
 }, function (error) {
   // 对请求错误做些什么
-  console.log("error");
+  // console.log("error");
   return Promise.reject(error)
 })
 
@@ -34,5 +35,6 @@ new Vue({
   el: '#app',
   router,
   components: { App },
-  template: '<App/>'
+  template: '<App/>',
+  
 })

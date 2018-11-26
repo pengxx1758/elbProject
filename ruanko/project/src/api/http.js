@@ -24,3 +24,21 @@ export function test(){
         console.log(error);
     })
 }
+
+export function getLocationByName(city,address){
+    let url = '/mapapi/geocoder'
+    this.$http.get(url,{
+      params:{
+        city: city,
+        address: address,
+        output: 'json',
+        key: 'MPz0YWb32SRcAbWPGE5CI8TBIOwjtAFF',
+      }
+    })
+    .then(res => {
+      console.log(res);
+    })
+    .catch(error => {
+      console.log(error);
+    })
+}
