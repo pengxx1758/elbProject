@@ -12,9 +12,11 @@ Vue.config.productionTip = false
 
 let bus = new Vue()
 Vue.prototype.$bus= bus
+
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/idea'
-Vue.prototype.$isLogin = true;
+Vue.prototype.$isLogin = false;
 Vue.use(ElementUI);
 
 axios.interceptors.request.use(function (config) {

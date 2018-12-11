@@ -77,18 +77,32 @@ export default {
     registerSubmitForm(formName, data, sole) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log(data);
-          alert("submit!");
+          // console.log(data);
           if (sole == 1) {
-            // 普通用户注册
-            // let url = this.HOST + '/register'
-            // this.$http.post(url,data)
-            // .then(res => {
-            //   console.log(res);
-            // })
-            // .catch(error => {
-            //   console.log(error);
-            // })
+            //普通用户注册
+            let url = this.HOST + '/register'
+            this.$http.get(url,{
+              params:{
+                username: data.username,
+                password: data.password,
+                tell: data.tell
+              }
+            })
+            .then(res => {
+              console.log(res);
+              if(res.data.status == "0"){
+                this.$message({
+                  type: 'success',
+                  message: res.data.message
+                });
+                router.push('/login');
+              }else{
+                this.$message.error(res.data.message);
+              }
+            })
+            .catch(error => {
+              console.log(error);
+            })
           } else {
             // 店铺注册
           }

@@ -2,8 +2,13 @@
     <div>
         <div id="index" @click="toIndex">首页</div>
         <!-- <el-menu-item index="/mainIndex">首页</el-menu-item> -->
-        <el-menu v-for="shopType in shopTypeList" :key="shopType.id" :default-active="activeIndex" class="el-menu-demo" mode="vertical" @select="handleSelect">
-            <el-menu-item index="" @click="toShop(shopType.mtype)" >{{shopType.mtype}}</el-menu-item>
+        <el-menu
+        style="min-height:540px;"  
+        :default-active="activeIndex" 
+        class="el-menu-demo" 
+        mode="vertical" 
+        @select="handleSelect">
+            <el-menu-item v-for="shopType in shopTypeList" :key="shopType.id" index="" @click="toShop(shopType.mtype)" >{{shopType.mtype}}</el-menu-item>
         </el-menu>
     </div>  
 </template>
@@ -12,39 +17,73 @@
 import router from "../router";
 export default {
   name: "shop_type",
+  created() {
+    this.getTypeList();
+  },
+  mounted() {
+    this.shopTypeList = [
+      // {
+      //   id: 0,
+      //   mtype: "美食"
+      // },
+      // {
+      //   id: 1,
+      //   mtype: "便利"
+      // },
+      // {
+      //   id: 2,
+      //   mtype: "水果"
+      // },
+      // {
+      //   id: 3,
+      //   mtype: "药品"
+      // },
+      // {
+      //   id: 4,
+      //   mtype: "甜食饮品"
+      // }
+    ];
+  },
   data() {
-    return {    
+    return {
       activeIndex: "",
-      shopTypeList: [
-        {
-          id: 0,
-          mtype: "美食"
-        },
-        {
-          id: 1,
-          mtype: "便利"
-        },
-        {
-          id: 2,
-          mtype: "水果"
-        },
-        {
-          id: 3,
-          mtype: "药品"
-        },
-        {
-          id: 4,
-          mtype: "甜食饮品"
-        }
-      ]
+      shopTypeList: ""
     };
   },
   methods: {
-    toIndex() {
-        router.push('/mainIndex');
+    getTypeList(){
+      var url = "/idea/listMerType"
+      this.$http.get(url,{
+
+      })
+      .then(res => {
+        console.log(res);
+        this.shopTypeList = res.data.allMerTypes;
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      
     },
-    toShop(mtype){
-        router.push('/shop_show/'+mtype);
+    toIndex() {
+      router.push("/mainIndex/index_content");
+      
+    },
+    toShop(mtype) {
+      // let url = this.HOST + "listMerchantByType";
+      // this.$http
+      //   .get(url, {
+      //     params: {
+      //       mType: mtype
+      //     }
+      //   })
+      //   .then(res => {
+      //     console.log(res);
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   });
+      router.push({ name: 'shop', params: { typeName: mtype } });
     },
     handleSelect(key, keyPath) {
       console.log(key, keyPath);

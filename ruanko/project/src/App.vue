@@ -1,47 +1,62 @@
 <template>
-  
   <div id="app">
     <el-container>
       <el-header>
-            <div id="logo">
-              <!-- <img src="./assets/logo.png" alt="商标"> -->
-              <span>饿了吧</span>
-            </div>
-            <div id="search">
-              <el-input
-                placeholder="请输入内容"
-                prefix-icon="el-icon-search"
-                v-model="searchInput"
-                >
-              </el-input>
-            </div>
-            <div id="login" style="float:right;">
-              
-              <el-button type="text" @click="toOrder">我的订单</el-button>
-              <el-button v-if="!this.$isLogin" type="text" @click="toLogin">登录 | 注册</el-button>
-              <el-button v-if="this.$isLogin" type="text" @click="toLogin" >我 的</el-button>
-               
+        <div id="logo">
+          <!-- <img src="./assets/logo.png" alt="商标"> -->
+          
+          <span @click="toIndex"> <img src=".\assets\logo.png" alt="商标">饿了吧</span>
+        </div>
+        <div id="search">
+          <el-input placeholder="请输入内容" prefix-icon="el-icon-search" v-model="searchInput"></el-input>
+        </div>
+        <div id="login" style="float:right;">
+          <el-dropdown @command="handleCommand">  
+            <span class="el-dropdown-link">
+              我的信息
+              <i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="/profile">个人中心</el-dropdown-item>
+              <el-dropdown-item command="/profile/order">我的订单</el-dropdown-item>
+              <el-dropdown-item command="/profile/favor">收藏中心</el-dropdown-item>
+              <el-dropdown-item command="/profile/address" >地址管理</el-dropdown-item>
+              <!-- <el-dropdown-item v-if="isLogin" command="" @click="loginOut">退出登录</el-dropdown-item> -->
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <el-button v-if="this.$isLogin" type="text" @click="toOrder">我的订单</el-button> -->
+          <el-button v-if="isLogin" type="text" @click="Out">登出</el-button>
+          <el-button v-if="!isLogin" type="text" @click="toLogin">登录 | 注册</el-button>
 
-              <!-- <router-link to="/login">登录/注册</router-link> -->
-              <el-button type="success" round @click="toRegistShop">我要开店</el-button>
-            </div>
+          <!-- <el-button v-if="this.$isLogin" type="text" @click="toLogin">我 的</el-button> -->
+
+          <!-- <router-link to="/login">登录/注册</router-link> -->
+          <el-button type="success" round @click="toRegistShop">我要开店</el-button>
+        </div>
       </el-header>
-      <el-main style="height:600px">
+      <el-main style="height:100%;min-height:600px;">
         <router-view></router-view>
       </el-main>
       <foot></foot>
-    </el-container>    
-  </div>  
-  
+    </el-container>
+  </div>
 </template>
 
 <script>
 import router from "./router";
-import foot from '@/components/foot'
+import foot from "@/components/foot";
+import { mapState,mapMutations } from "vuex";
 export default {
   name: "App",
-  components:{
-    foot,
+  components: {
+    foot
+  },
+  computed: {
+    ...mapState({
+      isLogin: state => {
+        return state.customer.isLogin;
+      }
+    })
   },
   created() {
     // this.route.push('/mainIndex');
@@ -70,14 +85,14 @@ export default {
       // 菜单默认项
       activeIndex: "/mainIndex",
       // 登录弹框
-      
+
       // 搜索块
       searchInput: "",
-
-     
     };
   },
   methods: {
+    ...mapMutations(["loginIn","loginOut"]),
+
     handleClose(done) {
       this.$confirm("确认关闭？")
         .then(_ => {
@@ -90,6 +105,11 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event);
+    },
+    // 下拉菜单 route
+    handleCommand(command) {
+      // this.$message("click on item " + command);
+      router.push(command);
     },
     telLoginSubmitForm(formName) {
       this.$refs[formName].validate(valid => {
@@ -155,27 +175,39 @@ export default {
         //调用短信验证API
       }
     },
-    isLogin() {
-      console.log(this.$isLogin);
-      if (this.$isLogin) {
-        router.push("/home");
-      }else{
-        router.push('/login');
-      }
+    // isLogin() {
+    //   console.log(this.$isLogin);
+    //   if (this.$isLogin) {
+    //     router.push("/home");
+    //   } else {
+    //     router.push("/login");
+    //   }
+    // },
+    Out(){
+      // console.log('111');
+      this.loginOut();
+      this.$message({
+        type: 'info',
+        message: '登出成功'
+      });
+      router.push('/login');
     },
     orderManagement() {
       console.log(333);
-      this.isLogin();
+      // this.isLogin();
       console.log(111);
     },
-    toLogin(){
-      router.push('/login');
+    toLogin() {
+      router.push("/login");
     },
-    toOrder(){
-      router.push('/order');
+    toOrder() {
+      router.push("/order");
     },
-    toRegistShop(){
-      router.push('/shopRegist');
+    toRegistShop() {
+      router.push("/shopRegist");
+    },
+    toIndex() {
+      router.push("/mainIndex/index_content");
     }
   }
 };
@@ -190,9 +222,17 @@ export default {
   /* color: #f3f7fa; */
   /* margin-top: 60px; */
 }
-.el-button--text {
+.el-button--text{
   color: #fff;
 }
+.el-dropdown {
+  color: #fff;
+  text-align: center;
+  padding: 0 10px;
+  cursor: pointer;
+  line-height: 35px;
+}
+
 .el-header,
 .el-footer {
   background-color: #409eff;
@@ -200,7 +240,7 @@ export default {
   text-align: center;
   line-height: 60px;
 }
-.el-footer p{
+.el-footer p {
   line-height: 25px;
 }
 .el-footer {
@@ -250,12 +290,19 @@ body > .el-container {
 #logo {
   float: left;
 }
-#logo > img {
+#logo img {
+  display: inline-block;
   width: 60px;
   height: 60px;
+  vertical-align: top;
 }
 #logo > span {
+  vertical-align: middle;
+  font-size: 30px;
+  line-height: 60px;
   font-weight: 1000;
+  display: inline-block;
+  cursor: pointer;
 }
 
 /* 搜索块 */

@@ -42,3 +42,4 @@ export function getLocationByName(city,address){
       console.log(error);
     })
 }
+
