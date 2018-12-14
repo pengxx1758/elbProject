@@ -13,23 +13,12 @@ Vue.config.productionTip = false
 let bus = new Vue()
 Vue.prototype.$bus= bus
 
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/idea'
 Vue.prototype.$isLogin = false;
 Vue.use(ElementUI);
 
-axios.interceptors.request.use(function (config) {
-  // 在发送请求之前做些什么
-  // 使用qs对参数进行处理
-  // config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-  config.data = qs.stringify(config.data) 
-  return config
-}, function (error) {
-  // 对请求错误做些什么
-  // console.log("error");
-  return Promise.reject(error)
-})
 
 
 new Vue({

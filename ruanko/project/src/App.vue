@@ -222,6 +222,11 @@ export default {
   /* color: #f3f7fa; */
   /* margin-top: 60px; */
 }
+
+body{
+  margin: 0;
+}
+
 .el-button--text{
   color: #fff;
 }
@@ -270,6 +275,7 @@ export default {
   background-color: #e9eef3;
   color: #333;
   text-align: center;
+  padding: 10px;
   /* line-height: 160px; */
 }
 

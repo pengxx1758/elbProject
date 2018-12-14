@@ -1,36 +1,46 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <!-- <el-upload
+    <el-upload
       class="avatar-uploader"
-      action="/idea/uploadImage"
+      action="/idea/test"
       :show-file-list="false"
       :on-success="handleAvatarSuccess"
       :before-upload="beforeAvatarUpload"
     >
       <img v-if="imageUrl" :src="imageUrl" class="avatar">
       <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-    </el-upload>-->
+    </el-upload>
     <el-form :model="testForm">
       <el-form-item></el-form-item>
       <el-input v-model="testForm.testfile" type="file"></el-input>
     </el-form>
     <el-button type="primary" @click="testSubmit(testForm)">测试</el-button>
-    <input
-      ref="file"
-      type="file"
-      id="file"
-      accept="image/png, image/gif, image/jpeg"
-      @change="update"
-    >
+
+    <input ref="file" type="file" id="file" @change="update">
 
     <el-button type="success" @click="postTest">POST测试</el-button>
+    <br>
+    <br>
+    <el-upload
+      action="idea/test"
+      list-type="picture-card"
+      :on-preview="handlePictureCardPreview"
+      :on-remove="handleRemove"
+      :on-success="handleAvatarSuccess"
+    >
+      <i class="el-icon-plus"></i>
+    </el-upload>
+    <el-dialog :visible.sync="dialogVisible">
+      <img width="100%" :src="dialogImageUrl" alt>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import qs from "qs";
 // import zizujian from "zizujian";
+import axios from "axios";
 export default {
   name: "HelloWorld",
   data() {
@@ -39,13 +49,16 @@ export default {
       imageUrl: "",
       testForm: {
         testfile: ""
-      }
+      },
+      dialogImageUrl: "",
+      dialogVisible: false
     };
   },
   methods: {
     handleAvatarSuccess(res, file) {
       console.log(res);
-      console.log(file);
+      
+      console.log(file);  
       this.imageUrl = URL.createObjectURL(file.raw);
       console.log("url:" + this.imageUrl);
       // get
@@ -72,47 +85,71 @@ export default {
       }
       return isJPG && isLt2M;
     },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
     testSubmit(data) {
       // console.log(data);
       var test = this.$refs.file;
       console.log(test.files[0]);
     },
-    update(e) {
-      let file = e.target.files[0];
-      console.log(file);
-      let param = new FormData(); //创建form对象
-      param.append("file", file, file.name); //通过append向form对象添加数据
 
-      // let config = {
-      //   headers: { "Content-Type": "multipart/form-data" }
-      // }; //添加请求头
-      let url = "/idea/uploadImage";
-      this.$http
-        .post(url, {
-          imageFile: 111
-        })
-        .then(res => {
-          console.log(res);
-        });
+    update(e) {
+      let file = this.$refs.file.files[0];
+      // console.log(file);
+      let param = new FormData(); //创建form对象
+      param.append("file", file); //通过append向form对象添加数据
+      console.log(param.get("file"));
+
+      let qsDate = qs.stringify(
+        {
+          imageFile: file
+        },
+        { indices: false }
+      );
+
+      let config = {
+        headers: { "Content-Type": "multipart/form-data" }
+      }; //添加请求头
+
+      let url = "/idea/test";
+      // this.$http
+      //   .post(url,param)
+      //   .then(res => {
+      //     console.log(res);
+      //   });
+      // let instance= axios.create({withCredentials:true})
+      this.$http.post(url, param).then(res => console.log(res));
     },
+
     postTest() {
       let url = "/idea/test";
+      // let file = e.target.files[0];
       let data = new FormData();
-      data.append("test", "FD进去的数据");
+      data.append("file", "file");
 
       // var params = new URLSearchParams();
       // params.append("test","URL进去的数据")
+      // var file = new File([], "test");
 
-      let qsDate = qs.stringify({
-        test: "qs进去的数据",
-        file: [1,2,3,4]
-      },{indices: false})
-
-      this.$http
-        .post(url, qsDate)
-        .then(res => {
-          console.log(res);
-        });
+      let qsDate = qs.stringify(
+        {
+          test: "qs进去的数据",
+          file: [1, 2, 3, 4]
+        },
+        { indices: false }
+      );
+      // let config = {
+      //   data: FormData,
+      //   headers: { "Content-Type": "multipart/form-data" }
+      // }; //添加请求头
+      this.$http.post(url, data).then(res => {
+        console.log(res);
+      });
     }
   },
   created() {

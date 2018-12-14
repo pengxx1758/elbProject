@@ -15,15 +15,9 @@
           >
             <el-input type="text" v-model="loginTelForm.tell"></el-input>
           </el-form-item>
-          <el-form-item
-            label="验证码"
-            prop="checkNumber"
-            :rules="[
-                        { required: true, message: '验证码不能为空'},
-                      ]"
-          >
+          <el-form-item label="验证码" prop="checkNumber">
             <el-input type="text" v-model="loginTelForm.checkNumber">
-              <el-button slot="append" @click="getCheckNum(loginTelForm.tell)">获取验证码</el-button>
+              <el-button ref="check" slot="append" @click="getCheckNum(loginTelForm.tell)">获取验证码</el-button>
             </el-input>
           </el-form-item>
           <el-form-item>
@@ -79,7 +73,7 @@ export default {
     return {
       // 登录表单
       loginActiveName: "tel",
-      checkSendFlag: "false",
+      checkSendFlag: false,
       loginRoleRadio: 0,
       loginTelForm: {
         tell: "",
@@ -92,15 +86,29 @@ export default {
       loginRules: {
         username: [
           { required: true, message: "请输入账号", trigger: "blur" },
-          { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
+          { min: 6, max: 15, message: "用户名应为 6 到 15 个字符", trigger: "blur" }
         ],
         password: [
           { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
+          { min: 6, max: 15, message: "密码应为 6 到 15 个字符", trigger: "blur" }
         ]
-      }
+      },
+
+      // 手机验证倒数定时器
+      timer: null,
+      // 秒数
+      second: 5,
+
+      // 用户收到的验证码
+      checkNum: '',
+
     };
   },
+  beforeDestroy() {
+    clearInterval(this.timer);
+    this.timer = null;
+  },
+  computed: {},
   methods: {
     ...mapMutations(["loginIn"]),
     handleClose(done) {
@@ -199,27 +207,49 @@ export default {
           this.checkSendFlag = !this.checkSendFlag;
         } else {
           console.log("error send telephone!");
-          this.checkSendFlag = !this.checkSendFlag;
+          this.checkSendFlag = false;
         }
+        console.log(this.checkSendFlag);
+        return this.checkSendFlag;
       });
     },
     getCheckNum(telNum) {
-      if (this.checkSendTel("loginTelForm")) {
-        console.log(telNum);
+      this.checkSendTel("loginTelForm");
+      if (this.checkSendFlag) {
+        var checkElement = event.target;
+        checkElement.innerText = "再次发送(" + this.second + "秒)";
+        this.$refs.check.disabled = "disabled"
+        this.checkSendFlag = false;
+        this.timer = setInterval(_ => {
+          if (this.second < 1) {
+            // that.timer;
+            clearInterval(this.timer);
+            this.timer = null;
+            this.$refs.check.disabled = "";
+            checkElement.innerText = "获得验证码";
+            this.second = 5;
+          } else {
+            this.second--;
+            checkElement.innerText = "再次发送(" + this.second + "秒)";
+          }
+        }, 1000);
+        // :rules="[
+        //   { required: true, message: '验证码不能为空'},
+        // ]"
         //调用短信验证API
-        let url = "/idea/registerByTel";
-        $http
-          .get(url, {
-            params: {
-              tel: telNum
-            }
-          })
-          .then(res => {
-            console.log(res);
-          })
-          .catch(error => {
-            console.log(error);
-          });
+        // let url = "/idea/registerByTel";
+        // this.$http
+        //   .get(url, {
+        //     params: {
+        //       tel: telNum
+        //     }
+        //   })
+        //   .then(res => {
+        //     console.log(res);
+        //   })
+        //   .catch(error => {
+        //     console.log(error);
+        //   });
       }
     },
     toReigster() {

@@ -75,6 +75,7 @@ export default {
   },
   methods: {
     registerSubmitForm(formName, data, sole) {
+      
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log(data);

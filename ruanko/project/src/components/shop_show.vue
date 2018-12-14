@@ -5,7 +5,7 @@
     <el-row :gutter="24">
       <el-col v-for="shop in shopList" :key="shop.id" :span="6">
         <div class="grid-content bg-purple">
-          <el-card :body-style="{ padding: '0px' }">
+          <el-card :body-style="{ padding: '0px' }" shadow="hover">
             <!-- <img v-bind:src="shop.src" class="image"> -->
             <img src="..\assets\images\shoppic.png" class="image">
             <div style="padding: 14px;">

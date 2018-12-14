@@ -19,6 +19,8 @@ import manager from '@/components/manager'
 import manager_customer from '@/components/manager_customer'
 import manager_merchant from '@/components/manager_merchant'
 
+import product from '@/components/product'
+
 import { getName } from "@/util/auth"
 import store from "../store"
 Vue.use(Router)
@@ -113,6 +115,10 @@ const route = new Router({
         }
       ],
     },
+    {
+      path: '/product',
+      component: product,
+    }
 
   ]
 })

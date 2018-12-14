@@ -22,8 +22,8 @@
         <el-form-item label="手机号" prop="tell">
           <el-input type="text" v-model="registerRuleForm.tell"></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input type="text" v-model="registerRuleForm.name"></el-input>
+        <el-form-item label="姓名" prop="idName">
+          <el-input type="text" v-model="registerRuleForm.idName"></el-input>
         </el-form-item>
         <el-form-item label="身份证号码" prop="idCard">
           <el-input type="text" v-model="registerRuleForm.idCard"></el-input>
@@ -33,6 +33,9 @@
         <!-- <h2>店铺信息</h2> -->
         <el-form-item label="店铺名称" prop="shopName">
           <el-input type="text" v-model="registerRuleForm.shopName"></el-input>
+        </el-form-item>
+        <el-form-item label="店铺地址" prop="shopAddr">
+          <el-input type="text" v-model="registerRuleForm.shopAddr"></el-input>
         </el-form-item>
         <el-form-item label="店铺类别" prop="shopType">
           <el-select v-model="registerRuleForm.shopType" placeholder="请选择">
@@ -62,12 +65,13 @@
           </el-dialog>
         </el-form-item>-->
         <el-form-item label="上传图片">
-          <!-- <el-upload
+          <el-upload
             class="upload-demo"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action="/idea/test"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
+            :on-success="handleSuccess"
             multiple
             :limit="3"
             :on-exceed="handleExceed"
@@ -76,8 +80,8 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">身份证正反面、营业许可证等开店证明</div>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-          </el-upload>-->
-          <input id="file_input" type="file"/>
+          </el-upload>
+          <!-- <input id="file_input" type="file" @change="uploadImg"/> -->
         </el-form-item>
       </div>
     </el-form>
@@ -86,7 +90,7 @@
         <el-button type="success" @click="toIndex">取 消</el-button>
         <el-button
           type="primary"
-          @click="registerSubmitForm('registerRuleForm',registerRuleForm,1)"
+          @click="registerSubmitForm('registerRuleForm',registerRuleForm)"
         >提交审核</el-button>
       </span>
     </div>
@@ -118,14 +122,14 @@ export default {
       }
     };
     let validateContact = function(rules, value, callback) {
-      if (value === "") {
+      if (value === "") { 
         callback(new Error("请输入姓名"));
       } else {
         // 中文或英文、数字正则
-        let regExpr = /^[a-zA-Z0-9 \u4e00-\u9fa5]+$/;
+        let regExpr = /^[ \u4e00-\u9fa5]+$/;
         if (!regExpr.test(value)) {
           callback(new Error("非法姓名"));
-        } else if (value && value.trim().length > 30) {
+        } else if (value && value.trim().length > 15) {
           callback(new Error("长度超出限制"));
         } else {
           callback();
@@ -139,11 +143,13 @@ export default {
         password: "",
         checkPass: "",
         tell: "",
-        name: "",
+        idName: "",
         idCard: "",
         shopName: "",
+        shopAddr: "",
         shopType: "美食"
       },
+      state_message_addr: '',
 
       registerRules: {
         username: [
@@ -159,11 +165,12 @@ export default {
           { required: true, message: "手机号不能为空" },
           { pattern: /^1[34578]\d{9}$/, message: "请输入正确的手机格式" }
         ],
-        name: [{ validator: validateContact, trigger: "blur" }],
+        idName: [{ validator: validateContact, trigger: "blur" }],
         idCard: [
           { required: true, message: "请输入身份证号码", trigger: "blur" }
         ],
-        shopName: [{ required: true, message: "请输入姓名", trigger: "blur" }]
+        shopName: [{ required: true, message: "店铺名称不能为空", trigger: "blur" }],
+        shopAddr: [{ required: true, message: "店铺地址不能为空", trigger: "blur" }]
       },
 
       // 商店类别选项
@@ -209,24 +216,24 @@ export default {
     };
   },
   methods: {
-    registerSubmitForm(formName, data, sole) {
+    registerSubmitForm(formName, data) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log(data);
           alert("submit!");
-          if (sole == 1) {
-            // 普通用户注册
-            // let url = this.HOST + '/register'
-            // this.$http.post(url,data)
-            // .then(res => {
-            //   console.log(res);
-            // })
-            // .catch(error => {
-            //   console.log(error);
-            // })
-          } else {
-            // 店铺注册
-          }
+          // get请求
+          let url = "/idea/.."
+          this.$http.get(url,{
+            params:{
+
+            }
+          })
+          .then(res => {
+            console.log(res);
+          })
+          .catch(error => {
+            console.log(error);
+          })
         } else {
           console.log("error submit!!");
           return false;
@@ -242,9 +249,16 @@ export default {
     handlePreview(file) {
       console.log(file);
     },
+    handleSuccess(res,file,fileList){
+      console.log(111);
+      console.log(res);
+      this.state_message_addr +=res.message+",";
+      console.log(file,fileList);
+      console.log("----"+this.state_message_addr);
+    },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 4 个文件，本次选择了 ${
+        `当前限制选择 3 个文件，本次选择了 ${
           files.length
         } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
