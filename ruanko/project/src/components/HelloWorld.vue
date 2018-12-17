@@ -34,6 +34,11 @@
     <el-dialog :visible.sync="dialogVisible">
       <img width="100%" :src="dialogImageUrl" alt>
     </el-dialog>
+
+    <br>
+    <br>
+
+    <el-button type="success" @click="postList">Post_List测试</el-button>
   </div>
 </template>
 
@@ -43,6 +48,7 @@ import qs from "qs";
 import axios from "axios";
 export default {
   name: "HelloWorld",
+  created() {},
   data() {
     return {
       msg: "Welcome to Your Vue.js App",
@@ -57,8 +63,8 @@ export default {
   methods: {
     handleAvatarSuccess(res, file) {
       console.log(res);
-      
-      console.log(file);  
+
+      console.log(file);
       this.imageUrl = URL.createObjectURL(file.raw);
       console.log("url:" + this.imageUrl);
       // get
@@ -150,6 +156,83 @@ export default {
       this.$http.post(url, data).then(res => {
         console.log(res);
       });
+    },
+    postList() {
+      // let array = [1,2,3,4];
+      // let url = "/idea/test1";
+
+      // this.$http.post(url,JSON.stringify(array))
+      // .then(res => {
+      //   console.log(res);
+      // })
+      // let data = new FormData();
+      // var orderitems = [
+      //   {
+      //     pid: 2,
+      //     numbers: 50,
+      //     uid: 1,
+      //     price: 20,
+      //     photo_addr: "111",
+      //     status1: 0
+      //   },
+      //   {
+      //     pid: 2,
+      //     numbers: 50,
+      //     uid: 1,
+      //     price: 21,
+      //     photo_addr: "111",
+      //     status1: 0
+      //   }
+      // ];
+      // data.append("orderitems", orderitems);
+      // data.append("total_price", 200);
+      // data.append("mid", 2);
+      // data.append("addr", "1111");
+      // data.append("uid", "22");
+      // sessionStorage.setItem("username", "pxx");
+      // console.log(sessionStorage.getItem("username"));
+      // console.log(111);
+      // sessionStorage.setItem("items",JSON.stringify([
+      //   {
+      //     id: 1,
+      //     message: "1111"
+      //   },
+      //   {
+      //     id: 2,
+      //     message: "2222"
+      //   }
+      // ]))
+      // console.log(sessionStorage['items']);
+      // console.log(sessionStorage);
+      const data = {
+        orderitems: [
+          {
+            pid: 2,
+            numbers: 50,
+            uid: 1,
+            price: 20,
+            photo_addr: "111",
+            status1: 0
+          },
+          {
+            pid: 2,
+            numbers: 50,
+            uid: 1,
+            price: 21,
+            photo_addr: "111",
+            status1: 0
+          }
+        ],
+        total_price: 200,
+        mid: 2,
+        addr: "131232r",
+        uid: "1111"
+      };
+      let url = "/idea/insertasdOrder";
+
+      this.$http.post(url,data).then(res => {
+        console.log(res);
+      });
     }
   },
   created() {
@@ -158,7 +241,7 @@ export default {
     // let url = '/mapapi/geocoder'
     // this.$http.get(url,{
     //   params:{
-    //     city: '湛江',
+    //     city: '湛江',  
     //     address: '广东海洋大学',
     //     output: 'json',
     //     key: 'MPz0YWb32SRcAbWPGE5CI8TBIOwjtAFF',

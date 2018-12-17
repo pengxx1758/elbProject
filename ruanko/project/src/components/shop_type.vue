@@ -96,7 +96,7 @@ export default {
   height: 56px;
   line-height: 56px;
   cursor: pointer;
-  background-color: #409eff;
+  /* background-color: #409eff; */
   border: 0;
   border-radius: 5px 5px 0 0;
 }

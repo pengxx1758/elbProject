@@ -1,6 +1,7 @@
 <template>
+<div class="bg">
   <div id="loginBlock">
-    <h1>欢迎，请登录</h1>
+    <span class="title">欢迎，请登录</span>
     <!-- <h1>{{isLogin}}</h1> -->
     <el-tabs v-model="loginActiveName" @tab-click="handleClick">
       <el-tab-pane label="手机登录" name="tel">
@@ -53,6 +54,7 @@
       </el-tab-pane>
     </el-tabs>
   </div>
+</div>
 </template>
 
 <script>
@@ -259,10 +261,27 @@ export default {
 };
 </script>
 
-<style>
+<style >
+.bg{
+  width: 100%;
+  height: 600px;
+  background: url('../assets/images/bg.jpg') no-repeat;
+  background-size: cover;
+}
 #loginBlock {
-  width: 500px;
-  margin: 0 auto;
+  float: right;
+  width: 350px;
+  margin: 100px 100px;
+  background-color: rgba(255, 255, 255, .9);
+  padding: 20px;
   /* background-color: red; */
+}
+#loginBlock .title{
+  font-size: 18px;
+  font-weight: 700;
+
+}
+.el-form-item__label{
+  text-align: left;
 }
 </style>

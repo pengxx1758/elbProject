@@ -287,11 +287,13 @@ export default {
 #shopRegistBlock {
   width: 1000px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .fl {
-  width: 50%;
+  width: 49%;
   float: left;
+  margin-right: 1%;
 }
 
 .fr {
@@ -308,4 +310,6 @@ export default {
   border: 0;
 
 }
+
+
 </style>

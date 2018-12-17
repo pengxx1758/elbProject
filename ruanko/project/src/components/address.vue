@@ -6,8 +6,13 @@
         <el-col v-for="item in addressList" :key="item.id" :span="8">
         </el-col>
       </el-row>-->
-      <div v-for="item in addressList" :key="item.id" class="address_item">
+      <div 
+      v-for="item in addressList" 
+      :key="item.id" 
+      class="address_item"
+      v-bind:class="{ selected: !item.aDefault}">
         <div class="address_item_btns">
+          <el-button v-if="item.aDefault" type="text" @click="setDefault(item.id)">设为默认</el-button>
           <el-button type="text" @click="changeAddress(item)">修改</el-button>
           <el-button type="text" @click="delAddress(item.id)">删除</el-button>
         </div>
@@ -43,7 +48,7 @@
           <el-input v-model="addressForm.contract_tel"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" @click="addAddress('addressForm')">提交</el-button>
+          <el-button type="success" @click="updateAddress('addressForm',addressForm,0)">提交</el-button>
           <el-button @click="dialogVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -54,6 +59,14 @@
 <script>
 export default {
   name: "address",
+  created() {
+    // this.getAddressList();
+  },
+  computed: {
+    // addressList(){
+    //   return this.getAddressList();
+    // }
+  },
   data() {
     return {
       addressList: [
@@ -61,41 +74,48 @@ export default {
           id: 0,
           username: "彭XX1",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 0
         },
         {
           id: 1,
           username: "彭XX2",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 1
         },
         {
           id: 2,
           username: "彭XX3",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 1
         },
         {
           id: 3,
           username: "彭XX4",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 1
         },
         {
           id: 4,
           username: "彭XX5",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 1
         },
         {
           id: 5,
           username: "彭XX5",
           address: "xx街道xx小区xx栋xxx号",
-          tel: "18888888888"
+          tel: "18888888888",
+          aDefault: 1
         }
       ],
       dialogVisible: false,
       addressForm:{
+        id: '',
         contract_man: '',
         addr: '',
         contract_tel: ''
@@ -115,18 +135,53 @@ export default {
     };
   },
   methods: {
+    getAddressList(){
+      let url = "/idea/findCustmerAddr"
+      this.$http.get(url,{
+        params:{
+          uid: 1
+        }
+      })
+      .then(res => {
+
+      })
+    },
+    setDefault(id){
+      let url = "/idea/"
+      this.$http.get(url,{
+        params:{
+          uid: 1,
+          id: id,
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+    },
     changeAddress(item) {
       this.addressForm = {
+        id: item.id,
         contract_man: item.username,
         addr: item.address,
         contract_tel: item.tel
-      }
-      this.dialogVisible = true
+      };
+      this.dialogVisible = true;
+      this.updateAddress('addressForm',addressForm,1);
     },
     delAddress(id) {
       // this.$message.error(username + "--" + id);
       this.$confirm("确认删除么？")
         .then(_ => {
+          let url = '/idea/delCustmerAddr'
+          this.$http.get(url,{
+            params:{
+              uid: 1,
+              id: id
+            }
+          })
+          .then(res => {
+            
+          })
           this.addressList.splice(id, 1);
         })
         .catch(_ => {
@@ -141,10 +196,41 @@ export default {
       }
       this.dialogVisible = true;
     },
-    addAddress(formName) {
+    updateAddress(formName,data,flag) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             alert('submit!');
+            if(flag == 0){
+              // 添加地址
+              let url = "/idea/addCustmerAddr";
+              this.$http.get(url,{
+                params:{
+                  uId: 1,
+                  contract_man: data.contract_man,
+                  addr: data.addr,
+                  contract_tel: data.contract_tel
+                }
+              })
+              .then(res => {
+                console.log(res);
+              })
+            }else{
+              // 更新地址
+              let url = "/idea/updateCustmerAddr";
+              this.$http.get(url,{
+                params:{
+                  id: data.id,
+                  uId: 1,
+                  contract_man: data.contract_man,
+                  addr: data.addr,
+                  contract_tel: data.contract_tel
+                }
+              })
+              .then(res => {
+                console.log(res);
+              })
+            }
+            console.log(data);
           } else {
             console.log('error submit!!');
             return false;
@@ -243,5 +329,10 @@ export default {
 .el-col {
   border-radius: 4px;
 }
+
+.selected{
+  border: 1px solid red;
+}
+
 </style>
 

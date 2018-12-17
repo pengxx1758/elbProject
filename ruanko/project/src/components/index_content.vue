@@ -32,14 +32,15 @@ export default {
 .el-carousel__item > img {
   width: 100%;
   height: 100%;
+  margin-top: 10px;
 }
 
-.el-carousel__item:nth-child(2n) {
+/* .el-carousel__item:nth-child(2n) {
     background-color: #99a9bf;
   }
   
   .el-carousel__item:nth-child(2n+1) {
     background-color: #d3dce6;
-  }
+  } */
 </style>
 

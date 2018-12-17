@@ -8,7 +8,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios';
 import qs from 'qs';
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 let bus = new Vue()
 Vue.prototype.$bus= bus
