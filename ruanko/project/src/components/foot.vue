@@ -1,6 +1,6 @@
 <template>
     <el-footer>
-        <p>
+        <p class="right">
           <el-button type="text">联系我们</el-button>
           <el-button type="text">服务条款和协议</el-button>
           <el-button type="text">隐私条款</el-button>
@@ -22,6 +22,6 @@ export default {
 };
 </script>
 
-<style>
+<style scope>
 
 </style>

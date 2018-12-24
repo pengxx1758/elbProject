@@ -7,12 +7,14 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import axios from 'axios';
+import storage from 'good-storage'
 import qs from 'qs';
-Vue.config.productionTip = false;
+// Vue.config.productionTip = false;
 
 let bus = new Vue()
 Vue.prototype.$bus= bus
-
+Vue.prototype.$store = store
+Vue.prototype.$session = storage.session
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/idea'

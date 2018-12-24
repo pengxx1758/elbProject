@@ -18,6 +18,13 @@ module.exports = {
           '^/idea': '' //这里理解成用‘/idea’代替target里面的地址，后面组件中我们掉接口时直接用api代替 比如我要调用'https://api.douban.com/user/add'，直接写‘/api/user/add’即可，此处的‘api’可以设置为自己想要设置的任何词语，符合规范即可
         }
       },
+      '/upload': {
+        target: 'http://localhost:8081',//设置你调用的接口域名和端口号 别忘了加http
+        changeOrigin: true,
+        // pathRewrite: {
+        //   '^/idea': '' //这里理解成用‘/idea’代替target里面的地址，后面组件中我们掉接口时直接用api代替 比如我要调用'https://api.douban.com/user/add'，直接写‘/api/user/add’即可，此处的‘api’可以设置为自己想要设置的任何词语，符合规范即可
+        // }
+      },
       '/mapapi': {
         target: 'http://api.map.baidu.com',
         changeOrigin: true,
@@ -28,7 +35,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

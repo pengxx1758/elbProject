@@ -10,6 +10,7 @@
       >
         <el-menu-item index="/manager/customer">用户管理</el-menu-item>
         <el-menu-item index="/manager/merchant">商家管理</el-menu-item>
+        <el-menu-item index="/manager/merchantCheck">店铺审核</el-menu-item>
       </el-menu>
     </el-aside>
     <el-main style="padding:0 0 0 20px;">

@@ -1,32 +1,30 @@
 <template>
-  <div id="merchant_Block">
+  <div id="customer_Block">
     <div class="nav">
-      <div class="nav_title">商家管理</div>
+      <div class="nav_title">用户管理</div>
     </div>
     <div class="info_Block">
       <el-table
         :data="tableData.slice((currentPage-1)*PageSize,currentPage*PageSize)"
         style=" width: 100%; text-align:center;"
+        v-loading="loading"
       >
         <!-- <el-table-column type="selection" width="55"></el-table-column> -->
-        <el-table-column prop="id" label="id" width="50"></el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
-        <el-table-column prop="tell" label="手机号码" width="120"></el-table-column>
-        <el-table-column prop="shopName" label="店铺名称" width="150"></el-table-column>
-        <el-table-column prop="mType" label="店铺类型" width="80"></el-table-column>
-        <el-table-column prop="addr" label="店铺地址" width="220"></el-table-column>
-        <el-table-column prop="mLock" label="账户状态" width="80"></el-table-column>
-        <el-table-column prop="state" label="店铺状态" width="80"></el-table-column>
+        <el-table-column prop="id" label="id" width="180"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="180"></el-table-column>
+        <el-table-column prop="tell" label="电话号码"></el-table-column>
+        <el-table-column prop="vip" label="是/否会员"></el-table-column>
+        <el-table-column prop="clock" label="用户状态"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
-              v-if="scope.row.mLock == '0'"
+              v-if="!(scope.row.clock)"
               type="danger"
               size="mini"
               @click="lock(scope.$index, scope.row)"
             >封禁</el-button>
             <el-button
-              v-if="scope.row.mLock == '1'"
+              v-if="(scope.row.clock)"
               type="success"
               size="mini"
               @click="unlock(scope.$index, scope.row)"
@@ -49,7 +47,7 @@
 
 <script>
 export default {
-  name: "manager_merchant",
+  name: "manager_customer",
   created() {
     this.getTableData();
   },
@@ -62,17 +60,20 @@ export default {
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       //   totalCount: 1,
       // 默认每页显示的条数（可修改）
-      PageSize: 10
+      PageSize: 10,
+
+      loading: true,
     };
   },
   methods: {
     getTableData() {
-      let url = "/idea/managerFindAllMerchant";
+      let url = "/idea/managerFindAllCustmer";
       this.$http
         .get(url, {})
         .then(res => {
-          console.log(res);
-          this.tableData = res.data.merchant;
+          // console.log(res);
+          this.tableData = res.data.customer;
+          this.loading = false;
         })
         .catch(error => {
           console.log(error);
@@ -80,27 +81,27 @@ export default {
     },
     lock(index, row) {
       console.log(index, row);
-      this.$confirm("确认封禁用户"+row.username+"的店铺\""+row.shopName+"\"？", "提示", {
+      this.$confirm("确认封禁用户"+row.username, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(_ => {
-            let url = "/idea/managerManageMer";
+            let url = "/idea/managerManageCus";
             this.$http
             .get(url, {
                 params: {
-                aid: 1,
-                mid: row.id,
-                mlock: row.mLock
+                aid: this.$session.getItem('aid'),
+                uid: row.id,
+                clock: row.clock
                 }
             })
             .then(res => {
-                console.log(res);
+                // console.log(res);
                 this.$message({
                     message: res.data.message,
                     type: 'success'
                 })
-                row.mLock = "1";
+                row.clock = 1;
             })
             .catch(error => {
                 this.$message.error(res.data.message);
@@ -111,27 +112,27 @@ export default {
     },
     unlock(index, row) {
       console.log(index, row);
-      this.$confirm("确认解禁用户"+row.username+"的店铺\""+row.shopName+"\"？", "提示", {
+      this.$confirm("确认解禁用户"+row.username, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(_ => {
-            let url = "/idea/managerManageMer";
+            let url = "/idea/managerManageCus";
             this.$http
             .get(url, {
                 params: {
-                aid: 1,
-                mid: row.id,
-                mlock: row.mLock
+                aid: this.$session.getItem('aid'),
+                uid: row.id,
+                clock: row.clock
                 }
             })
             .then(res => {
-                console.log(res);
+                // console.log(res);
                 this.$message({
                     message: res.data.message,
                     type: 'success'
                 })
-                row.mLock = "0";
+                row.clock = 0;
             })
             .catch(error => {
                 this.$message.error(res.data.message);
@@ -143,14 +144,13 @@ export default {
     handleCurrentChange(val) {
       // 同步当前页
       this.currentPage = val;
-    },
-
+    }
   }
 };
 </script>
 
 <style scoped>
-#merchant_Block {
+#customer_Block {
   height: 100%;
   width: 100%;
   padding: 0 20px;
@@ -158,10 +158,11 @@ export default {
   background-color: #fff;
 }
 
-#merchant_Block > .nav {
+#customer_Block > .nav {
   height: 60px;
   line-height: 60px;
   border-bottom: 3px solid #409eff;
+  margin-bottom: 20px;
 }
 
 .nav > .nav_title {
@@ -171,3 +172,4 @@ export default {
   text-align: left;
 }
 </style>
+

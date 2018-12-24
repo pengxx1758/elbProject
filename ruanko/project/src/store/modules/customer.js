@@ -4,13 +4,13 @@ const customer = {
     state: {
         isLogin: false,
         userId: '',    // 用户号
-        username: "",   // 用户名
-        tel: '',         // 用户手机
-        vip: false,        // 是否是Vip
+        username: null,   // 用户名
     },
     //getter
     getter: {
-        
+        // isLogin(){
+        //     return state => state.isLogin;
+        // }
     },
 
     // setter
@@ -20,6 +20,16 @@ const customer = {
 
     // mutations
     mutations: {
+        userStatus: (state,username) =>{
+            if(username){
+                state.username = username;
+                state.isLogin = true;
+            }else if(username == null){
+                sessionStorage.setItem("username",null);
+                state.username = null;
+                state.isLogin = false;
+            }
+        },
         loginIn: state => {
             state.isLogin = true;
         },
@@ -30,7 +40,9 @@ const customer = {
 
     // actions
     actions: {
-
+        setUser: ({commit},username) => {
+            commit("userStatus",username);
+        },
     }
 }
 

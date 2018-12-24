@@ -1,14 +1,14 @@
 <template>
   <!-- <div class="outer"></div> -->
-  <div id="shopBlock">
+  <div id="shopBlock" v-loading="loading">
     <!-- <img  src="..\assets\images\111.png" class="image"> -->
-    <el-row :gutter="24">
-      <el-col v-for="shop in shopList" :key="shop.id" :span="6">
+    <el-row :gutter="25">
+      <el-col v-for="shop in shopList" :key="shop.id" :span="5">
         <div class="grid-content bg-purple">
           <el-card :body-style="{ padding: '0px' }" shadow="hover">
             <!-- <img v-bind:src="shop.src" class="image"> -->
-            <img src="..\assets\images\shoppic.png" class="image">
-            <div style="padding: 14px;">
+            <img :src="shop.head_addr" class="image">
+            <div style="padding: 0 14px 14px 14px;">
               <span id="shop_name">{{shop.shopName}}</span>
               <div class="bottom clearfix">
                 <el-rate
@@ -18,8 +18,15 @@
                   text-color="#ff9900"
                   score-template="{value}"
                 ></el-rate>
-                <span id="sale">销量：{{shop.sale}}</span>
-                <el-button size="samll" type="primary" round id="btn_shop">去看看</el-button>
+                <p><span id="sale">销量：{{shop.sale}}</span></p>
+                <p class="delivery">免配送费</p> 
+                <el-button
+                  size="samll"
+                  type="primary"
+                  round
+                  id="btn_shop"
+                  @click="toShop(shop.id)"
+                >去看看</el-button>
               </div>
             </div>
           </el-card>
@@ -57,10 +64,13 @@ export default {
     //   this.shopType = $route.params.typeName;
     // },
     $route(to, from) {
-      console.log(to.path);
+      // console.log(to.path);
+      // console.log(to);
+      // console.log(from);
+      this.loading = true;
       this.shopType = this.$route.params.typeName;
       this.getShopData();
-    }    
+    }
   },
 
   data() {
@@ -68,7 +78,16 @@ export default {
       name: "shop_show",
       rateValue: 4.8,
       shopType: "",
-      shopList: [],
+      shopList: [
+        {
+          id: 1,
+          head_addr: "",
+          shopName: "",
+          sale: 22,
+          rate: 1
+        }
+      ],
+      loading: true
     };
   },
 
@@ -83,25 +102,40 @@ export default {
         })
         .then(res => {
           console.log(res);
-          this.shopList = res.data.merchants;
+          this.shopList = [];
+          res.data.merchants.forEach((el, index) => {
+            var headAddr = require("../assets/images/noimg.jpg");
+            if (el.head_addr != null) {
+              headAddr = "http://localhost:8081/upload/images/" + el.head_addr;
+            }
+            const item = {
+              id: el.id,
+              head_addr: headAddr,
+              shopName: el.shopName,
+              sale: el.sale,
+              rate: el.rate
+            };
+            this.shopList.push(item);
+          });
+          this.loading = false;
         })
         .catch(error => {
           console.log(error);
         });
+    },
+    toShop(shopid) {
+      this.$session.set("shopid", shopid);
+      router.push("/product");
     }
-    // clicked() {
-    //   this.$bus.$emit("test", "aaaaa");
-    //   this.$store.dispatch("user/Login", {
-    //     name: "a",
-    //     password: "asd"
-    //   });
-    //   console.log(getName());
-    // }
   }
 };
 </script>
 
 <style scoped>
+p,h1,h2,h3{
+  margin: 0;
+  padding: 0;
+}
 .el-row {
   margin-bottom: 20px;
   margin-left: 0 !important;
@@ -128,10 +162,9 @@ export default {
   background-color: #f9fafc;
 }
 
-
-
 .image {
-  width: 80%;
+  width: 180px;
+  height: 180px;
   display: block;
   margin: 5px auto;
 }
@@ -165,7 +198,16 @@ export default {
 }
 
 #sale {
-  float: left;
+  font-size: 16px;
+}
+.delivery{
+  font-size: 14px;
+  color: #666;
+}
+
+.bottom{
+  text-align: left;
+  position: relative;
 }
 
 /* #to_shop {
@@ -179,8 +221,12 @@ export default {
   top: 0px;
 }  */
 #btn_shop {
-  float: right;
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }
+
+
 
 div.outer {
   overflow: hidden;

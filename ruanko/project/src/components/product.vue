@@ -2,9 +2,9 @@
   <div>
     <div id="merchant_info">
       <div class="info_left">
-        <img src="..\assets\images\shoppic.png" alt>
+        <img :src="shopImg" alt>
         <div class="merchant_base_info">
-          <div class="shop_name">约吃潮汕</div>
+          <div class="shop_name">{{shopName}}</div>
           <el-rate
             v-model="shopRate"
             disabled
@@ -38,21 +38,22 @@
         <div class="nav">
           <div class="nav_title">商家商品</div>
         </div>
-        <div class="product_block">
+        <div class="product_block" v-loading="loading">
           <!-- <el-button type="primary" @click="show">显示</el-button> -->
           <div v-for="product in products" :key="product.id" class="product_item">
-            <img src="..\assets\images\shoppic.png" alt>
+            <img :src="product.photo_addr" alt>
             <div class="food_main">
-              <span>{{product.product_name}}</span>
+              <span>{{product.name}}</span>
               <el-rate
-                v-model="product.rate"
+                v-model="shopRate"
                 disabled
                 show-score
                 text-color="#ff9900"
                 score-template="{value}"
               ></el-rate>
 
-              <p>月售{{product.sale}}份</p>
+              <!-- <p>月售{{product.sale}}份</p> -->
+              <p>月售 0 份</p>
               <span class="food_price">￥{{product.price}}</span>
             </div>
             <el-button
@@ -81,7 +82,10 @@
           class="notice_content"
         >公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容公告内容</div>
       </div>
+      <div class="clear"></div>
     </div>
+
+
     <div id="shop_cart">
       <div class="shopCart_content">
         <div class="shopCart_top">
@@ -94,7 +98,7 @@
             <el-input-number
               class="addShopCart"
               size="mini"
-              v-model="product.quantity"
+              v-model="product.numbers"
               @change="updateShopCart(product,index)"
             ></el-input-number>
           </div>
@@ -110,7 +114,7 @@
         <span class="total_price">￥{{this.total}}</span>
         <span class="post_price">配送费￥0</span>
         <button v-if="!this.shopCartGroup.length" class="btn_pay shopCart_empty">购物车是空的</button>
-        <button v-if="this.shopCartGroup.length" class="btn_pay">结 算</button>
+        <button v-if="this.shopCartGroup.length" class="btn_pay" @click="toPay">结 算</button>
       </div>
     </div>
     <!-- <el-container>
@@ -124,80 +128,24 @@
 
 <script>
 import { JQuery } from "@/util/jquery-1.11.1.min.js";
-import { fly } from "@/util/fly.js";
+import route from "../router";
+// import * as f from '../util/fly'
+// import * as f from "@/util/fly";
 export default {
   name: "produce",
   created() {
-    console.log(sessionStorage);
-    console.log(sessionStorage['items'][0].id);
-    let items = JSON.parse(sessionStorage.getItem("items"));
-    console.log(items[0].id);
+    this.getData();
   },
-  mounted() {
-    // const oScript1 = document.createElement("script");
-    // oScript1.type = "text/javascript";
-    // oScript1.src = "../util/jquery-1.11.1.min.js";
-    // document.body.appendChild(oScript1);
-    // const oScript2 = document.createElement("script");
-    // oScript2.type = "text/javascript";
-    // oScript2.src = "../util/fly.js";
-    // document.body.appendChild(oScript2);
-  },
+  mounted() {},
   data() {
     return {
       shopRate: 4.5,
       num: 1,
-      products: [
-        {
-          id: 1,
-          product_name: "菜1",
-          rate: 4.6,
-          sale: 243,
-          price: 12.5,
-          productNum: 0
-        },
-        {
-          id: 2,
-          src: "",
-          product_name: "菜2",
-          rate: 4.2,
-          sale: 56,
-          price: 10.5,
-          productNum: 0
-        },
-        {
-          id: 3,
-          product_name: "菜3",
-          rate: 3.8,
-          sale: 13,
-          price: 9.5,
-          productNum: 0
-        },
-        {
-          id: 4,
-          product_name: "菜4",
-          rate: 2.6,
-          sale: 54,
-          price: 20.5,
-          productNum: 0
-        },
-        {
-          id: 5,
-          product_name: "菜5",
-          rate: 4.3,
-          sale: 252,
-          price: 8.5,
-          productNum: 0
-        },
-        {
-          id: 6,
-          product_name: "菜6",
-          rate: 4.6,
-          sale: 123,
-          price: 6.5,
-          productNum: 0
-        }
-      ],
+      shopName: "",
+      shopImg: "",
+      // 商品缓冲效果开关
+      loading: true,
+      products: [],
       shopCartGroup: []
     };
   },
@@ -210,10 +158,44 @@ export default {
     }
   },
   methods: {
+    getData() {
+      // 获得店铺基本信息
+      let url = "/idea/findMerchantMessage";
+      this.$http
+        .get(url, {
+          params: {
+            id: this.$session.get("shopid")
+          }
+        })
+        .then(res => {
+          // console.log(res);
+          this.shopName = res.data.merchant.shopName;
+          if (res.data.merchant.head_addr == null) {
+            this.shopImg = require("../assets/images/noimg.jpg");
+          } else {
+            this.shopImg = res.data.merchant.head_addr;
+          }
+        });
+      // 获得店铺产品信息
+      url = "/idea/listAllProduct";
+      this.$http
+        .get(url, {
+          params: {
+            mid: this.$session.get("shopid")
+          }
+        })
+        .then(res => {
+          // console.log(res);
+          this.products = res.data.productList;
+          this.loading = false;
+        });
+    },
     show() {
       console.log(this.products);
     },
     firstAdd(product, e) {
+      // console.log(f.fly.toString);
+
       // let cart = document.getElementById('shopCart_icon').offsetLeft;
       // // let flyer =
       // console.log(cart);
@@ -231,19 +213,18 @@ export default {
 
       // })
       // console.log(a);
-      console.log(fly);
       product.productNum = 1;
       const item = {
-        id: product.id,
-        name: product.product_name,
-        quantity: 1,
+        pid: product.id,
+        name: product.name,
+        numbers: 1,
         price: product.price,
         total: product.price // 小计
       };
       this.shopCartGroup.push(item);
     },
     updateProNum(product) {
-      let index = this.shopCartGroup.findIndex(ele => ele.id === product.id);
+      let index = this.shopCartGroup.findIndex(ele => ele.pid === product.id);
       let cartProduct = this.shopCartGroup[index];
 
       if (product.productNum < 1) {
@@ -252,29 +233,29 @@ export default {
         this.shopCartGroup.splice(index, 1);
       } else {
         // 同步更新购物车列表
-        cartProduct.quantity = product.productNum;
-        cartProduct.total = cartProduct.quantity * cartProduct.price;
+        cartProduct.numbers = product.productNum;
+        cartProduct.total = cartProduct.numbers * cartProduct.price;
       }
     },
     // 购物车的数量更新
     updateShopCart(product, cartIndex) {
-      let index = this.products.findIndex(ele => ele.id === product.id);
+      let index = this.products.findIndex(ele => ele.id === product.pid);
       let sProduct = this.products[index];
 
-      if (product.quantity < 1) {
+      if (product.numbers < 1) {
         // 删除购物车的记录
         sProduct.productNum = 0;
         this.shopCartGroup.splice(cartIndex, 1);
       } else {
         // 同步更新购物车列表
-        product.total = product.quantity * product.price;
-        sProduct.productNum = product.quantity;
+        product.total = product.numbers * product.price;
+        sProduct.productNum = product.numbers;
       }
     },
     // 清空购物车
     clearShopCart() {
       this.shopCartGroup.forEach(cartElement => {
-        let index = this.products.findIndex(ele => ele.id === cartElement.id);
+        let index = this.products.findIndex(ele => ele.id === cartElement.pid);
         this.products[index].productNum = 0;
       });
       this.shopCartGroup = [];
@@ -284,7 +265,7 @@ export default {
     getShopCartNum() {
       let num = 0;
       this.shopCartGroup.forEach(ele => {
-        num += ele.quantity;
+        num += ele.numbers;
       });
       return num;
     },
@@ -295,6 +276,39 @@ export default {
         total += ele.total;
       });
       return total;
+    },
+    // fly(){
+    //   fly();
+    // }
+
+    // 跳转到付款页面
+    toPay() {
+      console.log(this.shopCartGroup);
+      this.$session.set('orderitems',this.shopCartGroup);
+      this.$session.set('total',this.total);
+
+      let data = new FormData();
+      data.append('uid', this.$session.get("uid"));
+      data.append('mid', this.$session.get("shopid"));
+      data.append('items', JSON.stringify(this.shopCartGroup));
+      // data.append('orderitems1', '111');
+      data.append('total_price', this.total);
+
+      // 下单
+      let url = "/idea/insertOrder";
+      this.$http.post(url,data).then(res => {
+        console.log(res);
+        if(res.data.message == 'successful'){
+          this.$message({
+            type: 'success',
+            message: '初步下单成功'
+          })
+          this.$session.set('orderId',res.data.id);
+          route.push('/ordercheck');
+        }else{
+          this.$message.error('下单失败')
+        }
+      });
     }
   }
 };
@@ -396,6 +410,7 @@ span {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  margin-bottom: 20px;
 }
 #merchant_products {
   width: 74%;
@@ -405,6 +420,7 @@ span {
 }
 
 #merchant_products > .product_block {
+  min-height: 600px;
   height: 100%;
   width: 100%;
 }
@@ -594,5 +610,8 @@ span {
 
 .fl {
   float: left;
+}
+.clear {
+  clear: both;
 }
 </style>

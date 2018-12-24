@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import router from "../router";
+import router from "../../router";
 export default {
   name: "register",
   data() {
@@ -75,7 +75,6 @@ export default {
   },
   methods: {
     registerSubmitForm(formName, data, sole) {
-      
       this.$refs[formName].validate(valid => {
         if (valid) {
           // console.log(data);

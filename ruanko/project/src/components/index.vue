@@ -3,7 +3,7 @@
   <el-aside width="200px" >
     <shoptype></shoptype> 
   </el-aside>
-  <el-main style="padding:0 0 0 20px;">
+  <el-main style="padding:0 10px 0 10px;">
     <router-view></router-view>
   </el-main>
 </el-container>

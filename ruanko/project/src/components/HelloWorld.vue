@@ -23,6 +23,7 @@
     <br>
     <br>
     <el-upload
+      name="file1"
       action="idea/test"
       list-type="picture-card"
       :on-preview="handlePictureCardPreview"
@@ -57,6 +58,7 @@ export default {
         testfile: ""
       },
       dialogImageUrl: "",
+      file1: '',
       dialogVisible: false
     };
   },
@@ -108,7 +110,7 @@ export default {
       let file = this.$refs.file.files[0];
       // console.log(file);
       let param = new FormData(); //创建form对象
-      param.append("file", file); //通过append向form对象添加数据
+      param.append("file1", file); //通过append向form对象添加数据
       console.log(param.get("file"));
 
       let qsDate = qs.stringify(
@@ -165,30 +167,30 @@ export default {
       // .then(res => {
       //   console.log(res);
       // })
-      // let data = new FormData();
-      // var orderitems = [
-      //   {
-      //     pid: 2,
-      //     numbers: 50,
-      //     uid: 1,
-      //     price: 20,
-      //     photo_addr: "111",
-      //     status1: 0
-      //   },
-      //   {
-      //     pid: 2,
-      //     numbers: 50,
-      //     uid: 1,
-      //     price: 21,
-      //     photo_addr: "111",
-      //     status1: 0
-      //   }
-      // ];
-      // data.append("orderitems", orderitems);
-      // data.append("total_price", 200);
-      // data.append("mid", 2);
-      // data.append("addr", "1111");
-      // data.append("uid", "22");
+      let data = new FormData();
+      var orderitems = [
+        {
+          pid: 2,
+          numbers: 50,
+          uid: 1,
+          price: 20,
+          photo_addr: "111",
+          status1: 0
+        },
+        {
+          pid: 2,
+          numbers: 50,
+          uid: 1,
+          price: 21,
+          photo_addr: "111",
+          status1: 0
+        }
+      ];
+      data.append("orderitems",JSON.stringify(orderitems));
+      data.append("total_price", 200);
+      data.append("mid", 2);
+      data.append("addr", "1111");
+      data.append("uid", "22");
       // sessionStorage.setItem("username", "pxx");
       // console.log(sessionStorage.getItem("username"));
       // console.log(111);
@@ -204,31 +206,31 @@ export default {
       // ]))
       // console.log(sessionStorage['items']);
       // console.log(sessionStorage);
-      const data = {
-        orderitems: [
-          {
-            pid: 2,
-            numbers: 50,
-            uid: 1,
-            price: 20,
-            photo_addr: "111",
-            status1: 0
-          },
-          {
-            pid: 2,
-            numbers: 50,
-            uid: 1,
-            price: 21,
-            photo_addr: "111",
-            status1: 0
-          }
-        ],
-        total_price: 200,
-        mid: 2,
-        addr: "131232r",
-        uid: "1111"
-      };
-      let url = "/idea/insertasdOrder";
+      // const data = {
+      //   orderitems: [
+      //     {
+      //       pid: 2,
+      //       numbers: 50,
+      //       uid: 1,
+      //       price: 20,
+      //       photo_addr: "111",
+      //       status1: 0
+      //     },
+      //     {
+      //       pid: 2,
+      //       numbers: 50,
+      //       uid: 1,
+      //       price: 21,
+      //       photo_addr: "111",
+      //       status1: 0
+      //     }
+      //   ],
+        // total_price: 200,
+        // mid: 2,
+        // addr: "131232r",
+        // uid: "1111"
+      // };
+      let url = "/idea/test";
 
       this.$http.post(url,data).then(res => {
         console.log(res);
@@ -241,7 +243,7 @@ export default {
     // let url = '/mapapi/geocoder'
     // this.$http.get(url,{
     //   params:{
-    //     city: '湛江',  
+    //     city: '湛江',
     //     address: '广东海洋大学',
     //     output: 'json',
     //     key: 'MPz0YWb32SRcAbWPGE5CI8TBIOwjtAFF',

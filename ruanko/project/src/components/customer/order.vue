@@ -15,7 +15,7 @@
         <el-table-column label="下单内容" width="100">
           <template slot-scope="scope">
             <div class="order_pic">
-              <img src="..\assets\images\orderpic.jpg" alt>
+              <img src="..\..\assets\images\orderpic.jpg" alt>
             </div>
           </template>
         </el-table-column>

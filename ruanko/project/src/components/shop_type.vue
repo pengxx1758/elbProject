@@ -57,12 +57,14 @@ export default {
 
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
         this.shopTypeList = res.data.allMerTypes;
       })
       .catch(error => {
         console.log(error);
       })
+
+      
       
     },
     toIndex() {
@@ -86,7 +88,7 @@ export default {
       router.push({ name: 'shop', params: { typeName: mtype } });
     },
     handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+      // console.log(key, keyPath);
     }
   }
 };

@@ -18,6 +18,19 @@ export default {
 
         }
     },
+    created() {
+      
+    },
+    watch: {
+    // $route(){
+    //   this.shopType = $route.params.typeName;
+    // },
+    $route(to, from) {
+      // console.log(to.path);
+      // console.log(to);
+      // console.log(from);
+    }
+  },
 }
 </script>
 

@@ -5,12 +5,12 @@
       :model="registerRuleForm"
       :rules="registerRules"
       ref="registerRuleForm"
-      label-width="100px"  
+      label-width="100px"
     >
       <div class="fl">
         <!-- <h2>个人信息</h2> -->
         <el-form-item label="账号" prop="username">
-          <el-input v-model="registerRuleForm.username" ></el-input>
+          <el-input v-model="registerRuleForm.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="registerRuleForm.password" autocomplete="off"></el-input>
@@ -66,18 +66,20 @@
         </el-form-item>-->
         <el-form-item label="上传图片">
           <el-upload
-            class="upload-demo"
-            action="/idea/test"
+            name="imageFile"
+            class="avatar-uploader"
+            action="/idea/uploadImage"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             :on-success="handleSuccess"
             multiple
             :limit="3"
+            list-type="picture-card"
             :on-exceed="handleExceed"
-            :file-list="fileList"
           >
-            <el-button size="small" type="primary">点击上传</el-button>
+            <!-- <el-button size="small" type="primary">点击上传</el-button> -->  
+            <i class="el-icon-plus avatar-uploader-icon"></i>
             <div slot="tip" class="el-upload__tip">身份证正反面、营业许可证等开店证明</div>
             <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
           </el-upload>
@@ -98,7 +100,7 @@
 </template>
 
 <script>
-import route from "../router";
+import route from "../../router";
 export default {
   name: "shopRegist",
   data() {
@@ -122,7 +124,7 @@ export default {
       }
     };
     let validateContact = function(rules, value, callback) {
-      if (value === "") { 
+      if (value === "") {
         callback(new Error("请输入姓名"));
       } else {
         // 中文或英文、数字正则
@@ -148,8 +150,8 @@ export default {
         shopName: "",
         shopAddr: "",
         shopType: "美食"
-      },
-      state_message_addr: '',
+      },  
+      state_message_addr: "",
 
       registerRules: {
         username: [
@@ -165,12 +167,19 @@ export default {
           { required: true, message: "手机号不能为空" },
           { pattern: /^1[34578]\d{9}$/, message: "请输入正确的手机格式" }
         ],
-        idName: [{ validator: validateContact, trigger: "blur" }],
-        idCard: [
-          { required: true, message: "请输入身份证号码", trigger: "blur" }
+        idName: [
+          { validator: validateContact, trigger: "blur" }
         ],
-        shopName: [{ required: true, message: "店铺名称不能为空", trigger: "blur" }],
-        shopAddr: [{ required: true, message: "店铺地址不能为空", trigger: "blur" }]
+        idCard: [
+          { required: true, message: "请输入身份证号码", trigger: "blur" },
+          { pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/, message: "请输入正确的身份证格式" }
+        ],
+        shopName: [
+          { required: true, message: "店铺名称不能为空", trigger: "blur" }
+        ],
+        shopAddr: [
+          { required: true, message: "店铺地址不能为空", trigger: "blur" }
+        ]
       },
 
       // 商店类别选项
@@ -219,21 +228,41 @@ export default {
     registerSubmitForm(formName, data) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          console.log(data);
-          alert("submit!");
+          // console.log(data);
           // get请求
-          let url = "/idea/.."
-          this.$http.get(url,{
-            params:{
+          let url = "/idea/MerchantRegister";
+          this.$http
+            .get(url, {
+              params: {
+                username: data.username,
+                password: data.password,
+                tell: data.tell,
 
-            }
-          })
-          .then(res => {
-            console.log(res);
-          })
-          .catch(error => {
-            console.log(error);
-          })
+                idName: data.idName,
+                idCard: data.idCard,
+
+                shopName: data.shopName,
+                mType: data.shopType,
+                addr: data.shopAddr,
+                state_message_addr: this.state_message_addr
+              }
+            })
+            .then(res => {
+              console.log(res);
+              if(res.data.status == '0'){
+                this.$message({
+                  type: 'success',
+                  message: res.data.message
+                })
+                route.push('/mainIndex');
+              }else{
+                this.message.error(res.data.message);
+              }
+              
+            })
+            .catch(error => {
+              console.log(error);
+            });
         } else {
           console.log("error submit!!");
           return false;
@@ -243,18 +272,15 @@ export default {
     toIndex() {
       route.push("/mainIndex");
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
+
+    
     handlePreview(file) {
-      console.log(file);
+      // console.log(file);
     },
-    handleSuccess(res,file,fileList){
-      console.log(111);
-      console.log(res);
-      this.state_message_addr +=res.message+",";
-      console.log(file,fileList);
-      console.log("----"+this.state_message_addr);
+    handleSuccess(res, file, fileList) {
+      // console.log(res);
+      this.state_message_addr += res.fileName + ",";
+      // console.log("----" + this.state_message_addr);
     },
     handleExceed(files, fileList) {
       this.$message.warning(
@@ -267,25 +293,22 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
 
+    // 删除图片
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      this.state_message_addr = this.state_message_addr.replace(file.response.fileName+",","");
     },
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
-    handleChange(file, fileList) {
-      console.log(file);
-      console.log(fileList);
-      // this.fileList = fileList.slice(-3);
-    }
+    
   }
 };
 </script>
 
 <style scoped>
 #shopRegistBlock {
-  width: 1000px;
+  width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -305,11 +328,32 @@ export default {
   clear: both;
 }
 
-#file_input{
+#file_input {
   background-color: none;
   border: 0;
-
 }
 
-
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 148px;
+    height: 148px;
+    line-height: 148px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
