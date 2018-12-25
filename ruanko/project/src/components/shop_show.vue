@@ -25,7 +25,7 @@
                   type="primary"
                   round
                   id="btn_shop"
-                  @click="toShop(shop.id)"
+                  @click="toShop(shop.id,shop.state)"
                 >去看看</el-button>
               </div>
             </div>
@@ -113,7 +113,8 @@ export default {
               head_addr: headAddr,
               shopName: el.shopName,
               sale: el.sale,
-              rate: el.rate
+              rate: el.rate,
+              state: el.state
             };
             this.shopList.push(item);
           });
@@ -123,9 +124,17 @@ export default {
           console.log(error);
         });
     },
-    toShop(shopid) {
-      this.$session.set("shopid", shopid);
-      router.push("/product");
+    toShop(shopid,state) {
+      console.log(state);
+      if(state == '1'){
+        this.$message({
+          type: 'warning',
+          message: '该店铺已打烊'
+        })
+      }else{
+        this.$session.set("shopid", shopid);
+        router.push("/product");
+      }
     }
   }
 };

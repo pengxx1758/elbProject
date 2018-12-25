@@ -1,6 +1,8 @@
 <template>
   <div id="shopBlock">
     <div class="info">
+      <el-button v-if="shopState == '1'" type="success" class="shop_btn" @click="changeShopState">营业</el-button>
+      <el-button v-if="shopState == '3'" type="danger" class="shop_btn" @click="changeShopState">打烊</el-button>
       <div class="info_item">
         <el-upload
           name="imageFile"
@@ -74,6 +76,8 @@ export default {
       addr: "",
       imageUrl: "",
       loading: false,
+      // 店铺状态
+      shopState: "",
       // 总数据
       commentData: [
         {
@@ -123,6 +127,7 @@ export default {
           console.log(res);
           this.shopName = res.data.merchant.shopName;
           this.addr = res.data.merchant.addr;
+          this.shopState = res.data.merchant.state;
           if (res.data.merchant.head_addr != null) {
             this.imageUrl = res.data.merchant.head_addr;
           } else {
@@ -131,9 +136,36 @@ export default {
         });
     },
 
+    // 改变店铺状态
+    changeShopState() {
+      let url = "/idea/merchantOpenOrShoring";
+      this.$http
+        .get(url, {
+          params: {
+            id: this.$session.get("mid"),
+            state: this.shopState
+          }
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.status == "0") {
+            this.$message({
+              type: "success",
+              message: res.data.message
+            });
+            if(this.shopState == '1'){
+              this.shopState = '3';
+            }else{
+              this.shopState = '1';
+            }
+          } else {
+            this.$message.error(res.data.message);
+          }
+        });
+    },
     // 上传图片
     handleAvatarSuccess(res, file) {
-      this.imageUrl = 'http://localhost:8081/upload/images/'+res.fileName;
+      this.imageUrl = "http://localhost:8081/upload/images/" + res.fileName;
       console.log(res);
       console.log(this.imageUrl);
       //更新数据库
@@ -141,7 +173,7 @@ export default {
       this.$http
         .get(url, {
           params: {
-            id: this.$session.get('mid'),
+            id: this.$session.get("mid"),
             head_addr: res.fileName
           }
         })
@@ -197,11 +229,17 @@ a {
   /* background-color: pink; */
 }
 #shopBlock > .info {
+  position: relative;
   margin-bottom: 20px;
   width: 100%;
   background-color: #fff;
   padding: 30px 0 30px 20px;
   box-sizing: border-box;
+}
+.shop_btn {
+  position: absolute;
+  right: 30px;
+  top: 10px;
 }
 .info > .info_item {
   display: table-cell;

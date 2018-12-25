@@ -10,10 +10,11 @@
       <el-table
         :data="tableData.slice((currentPage-1)*PageSize,currentPage*PageSize)"
         style="width: 100%"
+        v-loading="loading"
       >
         <el-table-column prop="orderTime" label="下单时间" width="100"></el-table-column>
-        
-        <el-table-column  label="订单内容" prop="orderContent"  width="300">
+
+        <el-table-column label="订单内容" prop="orderContent" width="300">
           <template slot-scope="scope">
             <div id="orderContent">{{ scope.row.orderContent }}</div>
           </template>
@@ -22,12 +23,14 @@
         <el-table-column prop="orderStatus" label="订单状态" width="180"></el-table-column>
         <el-table-column prop="orderAction" label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" @click="orderDetail(scope.$index, scope.row)">订单详情</el-button>
+
+            <el-button  type="success" size="mini" @click="receiveOrder(scope.$index, scope.row.orderId)">接单</el-button>
+            <el-button type="danger" size="mini" @click="cancelOrder">退单</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    
+
     <el-pagination
       @current-change="handleCurrentChange"
       :current-page="currentPage"
@@ -43,6 +46,8 @@ export default {
   name: "order",
   created() {
     this.getData();
+    
+    // console.log(this.tableData);
   },
   data() {
     return {
@@ -98,30 +103,96 @@ export default {
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       totalCount: 1,
       // 默认每页显示的条数（可修改）
-      PageSize: 4
+      PageSize: 10,
+
+      // 缓冲过渡开关
+      loading: true
     };
   },
   methods: {
     getData() {
-        let url = "/idea/getOrders";
-        this.$http.get(url,{
-            params:{
-                id:this.$session.get('mid'),
-            }
+      let url = "/idea/getOrders";
+      this.$http
+        .get(url, {
+          params: {
+            id: this.$session.get("mid")
+          }
         })
         .then(res => {
-          console.log(res);
-          this.tableData = res.data.message;
-        })
+
+          // 拼接数据
+          // res.data.orderitems.forEach((el,index) => {
+          //     console.log(index,el);
+          //   })
+          res.data.message.forEach((el,index) => {
+            // console.log(index,el);
+            const item = {
+              orderId: el.id,
+              orderTime: this.getDate(el.create_time),
+              orderContent: el.pNameAndNumner,
+              orderPay: '￥'+el.total_price,
+              orderState: el.stated,
+              orderStatus: this.getOrderState(el.stated)
+            };
+            this.tableData.push(item);
+
+          })
+          this.loading = false;
+        });
     },
-    orderDetail(index, row) {
-      console.log(index, row);
+    receiveOrder(index, id) {
+      // 接单请求
+      let url = "/idea/receiveOrdered";
+      this.$http.get(url,{
+        params:{
+          id: id
+        }
+      })
+      .then(res => {
+        console.log(res);
+      })
+    },
+    cancelOrder(id){
+      // 取消订单请求
     },
 
     // 显示的当前页
     handleCurrentChange(val) {
       // 改变默认的页数
       this.currentPage = val;
+    },
+
+    // 时间戳转年月日时分秒
+    getDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString();
+    },
+    // 获得订单内容
+    // getOrderContent(productStr) {
+    //   var str = '';
+    //   var str1 = productStr.split(';');
+    //   for(var i=0;i<str1.length;i++){
+    //     str += str1[i]+ '份';
+    //   }
+    //   return str;
+    // },
+    // 获得订单状态
+    getOrderState(state) {
+      switch (state) {
+        case "0":
+          return "未接单";
+        case "1":
+          return "已付款";
+        case "2":
+          return "已接单";
+        case "3":
+          return "请求催单";
+        case "4":
+          return "申请退订";
+        case "5":
+          return "已完成订单";
+        case "6":
+          return "已完成退单";
+      }
     }
   }
 };

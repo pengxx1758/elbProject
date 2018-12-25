@@ -158,23 +158,24 @@ const route = new Router({
   ]
 })
 
-const whiteList = ['/login', '/regist'];
-const test = true;
+const whiteList = ['/login', '/regist','/shopRegist'];
+const test = false;
 
 route.beforeEach((to, from, next) => {
-  // if (whiteList.indexOf(to.path) !== -1) {
-  //   next();
-  // }else{
-  //   if(test){
-  //     next();
-  //   }else{
-  //     if(getName() === ""){
-  //       next({path: '/login'});
-  //     }else{
-  //       next();
-  //     }
-  //   }
-  // }
+  sessionStorage.getItem("isLogin")
+  if (whiteList.indexOf(to.path) !== -1) {
+    next();
+  }else{
+    if(test){
+      next();
+    }else{
+      if(sessionStorage.getItem("isLogin") == null){
+        next({path: '/login'});
+      }else{
+        next();
+      }
+    }
+  }
   // console.log(store.state.customer.isLogin);
   // console.log(to.matched);
   // if (
@@ -187,7 +188,7 @@ route.beforeEach((to, from, next) => {
   // } else {
   //   next();
   // }
-  next();
+  // next();
 })
 
 export default route

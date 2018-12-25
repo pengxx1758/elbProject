@@ -256,7 +256,7 @@ export default {
                 })
                 route.push('/mainIndex');
               }else{
-                this.message.error(res.data.message);
+                this.$message.error(res.data.message);
               }
               
             })

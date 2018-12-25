@@ -302,11 +302,11 @@ export default {
           this.$message({
             type: 'success',
             message: '初步下单成功'
-          })
+          });
           this.$session.set('orderId',res.data.id);
           route.push('/ordercheck');
         }else{
-          this.$message.error('下单失败')
+          this.$message.error('下单失败');
         }
       });
     }

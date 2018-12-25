@@ -12,7 +12,7 @@
             class="demo-ruleForm"
           >
             <el-form-item
-            ref="tell"
+              ref="tell"
               label="手机号"
               prop="tell"
               :rules="[
@@ -22,10 +22,7 @@
             >
               <el-input type="text" v-model="loginTelForm.tell"></el-input>
             </el-form-item>
-            <el-form-item
-              label="验证码"
-              prop="checkNumber"
-            >
+            <el-form-item label="验证码" prop="checkNumber">
               <el-input type="text" v-model="loginTelForm.checkNumber">
                 <el-button ref="check" slot="append" @click="getCheckNum(loginTelForm.tell)">获取验证码</el-button>
               </el-input>
@@ -153,40 +150,45 @@ export default {
     telLoginSubmitForm(formName, data) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
           // 请求登录.....
-          if(data.checkNumber != ''){
-            if(data.checkNumber == this.VerificationCode && data.tell == this.acceptTelephone){
+          if (data.checkNumber != "") {
+            if (
+              data.checkNumber == this.VerificationCode &&
+              data.tell == this.acceptTelephone
+            ) {
               let url = "/idea/loginByTel";
-              this.$http.get(url,{
-                params:{
-                  tel: data.tell
-                }
-              })
-              .then(res => {
-                console.log(res);
-                if(res.data.tag){
-                  this.$message({
-                    type: 'success',
-                    message: '登录成功'
-                  })
-                  // vuex保存信息
-                  this.$session.setItem('loginRole','0');
-                  this.$session.setItem('uid',1); // 未完成
-                  router.push('/mainIndex');
-                }else{
-                  this.$message({
-                    type: 'warning',
-                    message: '该手机号码未曾注册，请进行注册'
-                  })
-                  router.push('/regist');
-                }
-              })
-            }else{
-              this.$message.error('手机或验证码错误');
+              this.$http
+                .get(url, {
+                  params: {
+                    tel: data.tell
+                  }
+                })
+                .then(res => {
+                  // console.log(res);
+                  if (res.data.tag) {
+                    this.$message({
+                      type: "success",
+                      message: "登录成功"
+                    });
+                    // vuex保存信息
+                     this.$session.set("isLogin", true);
+                    this.$session.set("loginRole", "0");
+                    this.$session.set("uid", res.data.message.id); 
+                    this.$session.set('username',res.data.message.username);
+                    router.push("/mainIndex");
+                  } else {
+                    this.$message({
+                      type: "warning",
+                      message: "该手机号码未曾注册，请进行注册"
+                    });
+                    router.push("/regist");
+                  }
+                });
+            } else {
+              this.$message.error("手机或验证码错误");
             }
-          }else{
-            this.$message.error('请输入验证码');
+          } else {
+            this.$message.error("请输入验证码");
           }
         } else {
           console.log("error submit!!");
@@ -203,11 +205,11 @@ export default {
           // alert("submit!");
           // 请求登录.....
           let url = "";
-          if(role == '0'){
-url = "/idea/login"
-          }else if(role == '1'){
+          if (role == "0") {
+            url = "/idea/login";
+          } else if (role == "1") {
             url = "/idea/MerchantLogin";
-          }else{
+          } else {
             url = "/idea/managerLogin";
           }
 
@@ -220,7 +222,7 @@ url = "/idea/login"
               }
             })
             .then(res => {
-              console.log(res);
+              // console.log(res);
               if (res.data.status == "0") {
                 this.$message({
                   type: "success",
@@ -228,23 +230,22 @@ url = "/idea/login"
                 });
                 //  此处应用vuex 进行全局保存
                 this.loginIn();
-                this.$session.set("isLogin",true);
-                if(role == '0'){
-                  this.$session.set("loginRole",'0');
-                  this.$session.set("uid",res.data.record.id);
-                  this.$session.set("username",res.data.record.username);
-                  router.push('/mainIndex');
-                }else if(role == '1'){
-                  this.$session.set('loginRole','1');
-                  this.$session.set('mid',res.data.record.id); // 未完成
-                  router.push('/mainIndex');
-                }else{
-                  this.$session.set('loginRole','2');  
-                  this.$session.set('aid',res.data.manager.id) 
-                  this.$session.set('manager',res.data.manager.username); 
-                  router.push('/manager');
+                this.$session.set("isLogin", true);
+                if (role == "0") {
+                  this.$session.set("loginRole", "0");
+                  this.$session.set("uid", res.data.record.id);
+                  this.$session.set("username", res.data.record.username);
+                  router.push("/mainIndex");
+                } else if (role == "1") {
+                  this.$session.set("loginRole", "1");
+                  this.$session.set("mid", res.data.record.id); // 未完成
+                  router.push("/mainIndex");
+                } else {
+                  this.$session.set("loginRole", "2");
+                  this.$session.set("aid", res.data.manager.id);
+                  this.$session.set("manager", res.data.manager.username);
+                  router.push("/manager");
                 }
-
               } else {
                 this.$message.error(res.data.message);
               }
@@ -325,7 +326,7 @@ url = "/idea/login"
             }
           })
           .then(res => {
-            console.log(res);
+            // console.log(res);
             this.VerificationCode = res.data.VerificationCode;
             this.acceptTelephone = res.data.tel;
           });

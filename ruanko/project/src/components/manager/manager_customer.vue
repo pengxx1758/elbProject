@@ -90,18 +90,22 @@ export default {
             this.$http
             .get(url, {
                 params: {
-                aid: this.$session.getItem('aid'),
+                aid: this.$session.get('aid'),
                 uid: row.id,
                 clock: row.clock
                 }
             })
             .then(res => {
-                // console.log(res);
-                this.$message({
-                    message: res.data.message,
-                    type: 'success'
-                })
-                row.clock = 1;
+                console.log(res);
+                if(res.data.status == '0'){
+                  this.$message({
+                      message: res.data.message,
+                      type: 'success'
+                  })
+                  row.clock = 1;
+                }else{
+                  this.$message.error(res.data.message);
+                }
             })
             .catch(error => {
                 this.$message.error(res.data.message);
@@ -121,18 +125,22 @@ export default {
             this.$http
             .get(url, {
                 params: {
-                aid: this.$session.getItem('aid'),
+                aid: this.$session.get('aid'),
                 uid: row.id,
                 clock: row.clock
                 }
             })
             .then(res => {
                 // console.log(res);
-                this.$message({
-                    message: res.data.message,
-                    type: 'success'
-                })
-                row.clock = 0;
+                if(res.data.status == '0'){
+                  this.$message({
+                      message: res.data.message,
+                      type: 'success'
+                  })
+                  row.clock = 0;
+                }else{
+                  this.$message.error(res.data.message);
+                }
             })
             .catch(error => {
                 this.$message.error(res.data.message);

@@ -135,7 +135,7 @@ export default {
         contract_tell: "",
         addr: ""
       },
-      aid: '',
+      addr: '',
     };
   },
   methods: {
@@ -173,19 +173,22 @@ export default {
         contract_tell: item.contract_tell,
         addr: item.addr
       };
-      this.aid = item.id;
-      console.log(this.aid);
+      this.addr = item.addr;
+      console.log(this.addr);
     },
 
     // 调用支付宝接口
     checkOrder() {
+      console.log(this.order.orderId);
+      console.log(this.order.total_price);
+      console.log(this.addr);
       let url = "/idea/payment";
       this.$http
         .get(url, {
           params: {
-            addr: this.aid,
-            id: this.orderId,
-            total_price: this.total_price,
+            addr: this.addr,
+            id: this.order.orderId,
+            total_price: this.order.total_price,
             orderName: "外卖"
           }
         })

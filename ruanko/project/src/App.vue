@@ -259,6 +259,7 @@ export default {
     Out() {
       // console.log('111');
       // this.loginOut();
+      
       this.$session.clear();
       console.log(444);
       router.push("/login");
