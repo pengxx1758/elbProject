@@ -26,27 +26,27 @@
       <div class="nav">
         <a href="#" id="nav_title">最近订单</a>
       </div>
-      <div class="order_block">
-        <div class="order_item">
+      <div class="order_block" v-loading="loading">
+        <div class="show" v-if="orderItems.length <= 0">暂无订单</div>
+        <div v-for="order in orderItems" :key="order.id" class="order_item">
           <div class="inner_order_item order_info clear">
             <a class="logo" href="#">
-              <img src="..\..\assets\images\orderpic.jpg" alt>
+              <img :src="order.shopSrc" alt>
             </a>
             <h3 class="name">
-              <a href="#">XXXXX店</a>
+              <a href="#">{{order.shopName}}</a>
             </h3>
-            <p class="product">xxxxxx1份</p>
+            <p class="product">{{order.orderContent}}</p>
             <a class="productnum" href="#">共
-              <span class="red">1</span>件商品
+              <span class="red">{{order.total_num}}</span>件商品
             </a>
           </div>
-          <div class="inner_order_item order_time">2018年11月30日 09:14:56</div>
+          <div class="inner_order_item order_time">{{order.orderDateTime}}</div>
           <div class="inner_order_item order_price">
-            <p class="total">￥88.88</p>
+            <p class="total">￥{{order.total_price}}</p>
           </div>
           <div class="inner_order_item order_status">
-            <p class="end">订单已完成</p>
-            <a href="#">订单详情>></a>
+            <p class="end">{{order.orderStatus}}</p>
           </div>
         </div>
       </div>
@@ -58,18 +58,20 @@
 export default {
   name: "user_info",
   created() {
-    this.getCurrentOrder();
+    this.getRencenOrder();
+    // console.log(this.getAllNumber('菜品1,1;菜品2,2;'));
   },
   data() {
     return {
       imageUrl: require("../../assets/images/userphoto.jpg"),
 
       orderItems: [],
+      loading: true,
     };
   },
   methods: {
     // 获得最新的三条订单信息
-    getCurrentOrder(){
+    getRencenOrder(){
       let url = '/idea/return3LastOrder';
       this.$http.get(url,{
         params:{
@@ -78,33 +80,90 @@ export default {
       })
       .then(res => {
         console.log(res);
+
+        res.data.lists.forEach(el => {
+          var imgUrl = require('../../assets/images/noimg.jpg');
+          if(el.head_addr != null){
+            imgUrl = 'http://localhost:8081/upload/images/'+el.head_addr;
+          }
+          const item = {
+          orderId: el.id, // 订单id
+          shopSrc: imgUrl,  // 店铺图片地址
+          shopName: el.merchantName, // 店铺名
+          orderContent: el.pNameAndNumner,  // 订单内容 xxx,x份;..
+          total_num: this.getAllNumber(el.pNameAndNumner),  // 每张订单的份数之和 
+          orderDateTime: this.getDate(el.create_time), // 订单建立时间
+          total_price: el.total_price, //订单总金额
+          orderState: el.stated, // 订单状态
+          orderStatus: this.getOrderState(el.stated),
+        }
+        this.orderItems.push(item);
+        });
+        this.loading = false;
+        
       })
+    },
+    // 时间戳获得下单时间
+    getDate(timestamp) {
+      return new Date(timestamp).toLocaleDateString();
+    },
+    // 获得总份数
+    getAllNumber(str){
+      var num = 0;
+      var str1 = str.split(';');
+      console.log(str1);
+      for(var i=0;i<str1.length;i++){
+        var str2 = str1[i].split(',');
+        console.log(str2[1]);
+        if(str2[1] != undefined){
+          num += parseInt(str2[1]);
+        }
+      }
+      return num;
+    },
+    getOrderState(state) {
+      switch (state) {
+        case "0":
+          return "未付款";
+        case "1":
+          return "已付款";
+        case "2":
+          return "已接单";
+        case "3":
+          return "请求催单";
+        case "4":
+          return "申请退订";
+        case "5":
+          return "已完成订单";
+        case "6":
+          return "已完成退单";
+      }
     },
     // 上传图片
     handleAvatarSuccess(res, file) {
-      // this.imageUrl = "http://localhost:8081/upload/images/" + res.fileName;
+      this.imageUrl = "http://localhost:8081/upload/images/" + res.fileName;
       console.log(res);
       console.log(this.imageUrl);
       //更新数据库
-      // let url = "/idea/updateMerchantMessage";
-      // this.$http
-      //   .get(url, {
-      //     params: {
-      //       id: this.$session.get("mid"),
-      //       head_addr: res.fileName
-      //     }
-      //   })
-      //   .then(res => {
-      //     console.log(res);
-      //     if (res.data.status == "0") {
-      //       this.$message({
-      //         type: "success",
-      //         message: res.data.message
-      //       });
-      //     } else {
-      //       this.$message.error(res.data.message);
-      //     }
-      //   });
+      let url = "/idea/updateCustmerMessage";
+      this.$http
+        .get(url, {
+          params: {
+            id: this.$session.get("uid"),
+            head_addr: res.fileName
+          }
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.status == "0") {
+            this.$message({
+              type: "success",
+              message: res.data.message
+            });
+          } else {
+            this.$message.error(res.data.message);
+          }
+        });
     },
     beforeAvatarUpload(file) {
       const isJP = file.type === "image/jpeg" || "image/png";
@@ -187,6 +246,10 @@ a {
 }
 .recenOrder > .order_block {
   width: 100%;
+}
+.show{
+  height: 50px;
+  font-size: 20px;
 }
 .recenOrder > .order_block > .order_item {
   padding: 20px 0 15px;

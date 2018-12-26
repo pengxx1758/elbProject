@@ -171,7 +171,7 @@ export default {
                       message: "登录成功"
                     });
                     // vuex保存信息
-                     this.$session.set("isLogin", true);
+                    this.$session.set("isLogin", true);
                     this.$session.set("loginRole", "0");
                     this.$session.set("uid", res.data.message.id); 
                     this.$session.set('username',res.data.message.username);

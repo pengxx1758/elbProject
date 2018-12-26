@@ -78,9 +78,9 @@ export default {
   name: "order_check",
   created() {
     this.getAddressList();
-    this.order.orderId = this.$session.get('orderId');
-    this.order.orderItems = this.$session.get('orderitems');
-    this.order.total_price = this.$session.get('total');
+    this.order.orderId = this.$session.get("orderId");
+    this.order.orderItems = this.$session.get("orderitems");
+    this.order.total_price = this.$session.get("total");
   },
   data() {
     return {
@@ -110,24 +110,24 @@ export default {
       },
 
       addressList: [
-        {
-          id: 0,
-          content_man: "测试员1",
-          content_tell: "13333333333",
-          addr: "xx市xx区xx街道xx栋"
-        },
-        {
-          id: 1,
-          content_man: "测试员2",
-          content_tell: "13333333333",
-          addr: "xx市xx区xx街道xx栋"
-        },
-        {
-          id: 2,
-          content_man: "测试员3",
-          content_tell: "13333333333",
-          addr: "xx市xx区xx街道xx栋"
-        }
+        // {
+        //   id: 0,
+        //   content_man: "测试员1",
+        //   content_tell: "13333333333",
+        //   addr: "xx市xx区xx街道xx栋"
+        // },
+        // {
+        //   id: 1,
+        //   content_man: "测试员2",
+        //   content_tell: "13333333333",
+        //   addr: "xx市xx区xx街道xx栋"
+        // },
+        // {
+        //   id: 2,
+        //   content_man: "测试员3",
+        //   content_tell: "13333333333",
+        //   addr: "xx市xx区xx街道xx栋"
+        // }
       ],
       currentAddr: {
         id: "",
@@ -135,7 +135,7 @@ export default {
         contract_tell: "",
         addr: ""
       },
-      addr: '',
+      addr: ""
     };
   },
   methods: {
@@ -145,25 +145,36 @@ export default {
       this.$http
         .get(url, {
           params: {
-            uId: this.$session.get('uid'),
+            uId: this.$session.get("uid")
           }
         })
         .then(res => {
           console.log(res);
           this.addressList = res.data.address;
+          this.addressList.forEach(el => {
+            if (el.aDefault == "0") {
+              this.currentAddr = {
+                id: el.id,
+                contract_man: el.contract_man,
+                contract_tell: el.contract_tell,
+                addr: el.addr
+              };
+              this.addr = el.addr;
+            }
+          });
         });
     },
     // 获取所下订单的详细信息
     getOrderTable() {
-      let url = "/idea/";
-      this.$http
-        .get(url, {
-          params: {}
-        })
-        .then(res => {
-          console.log(res);
-          // this.orderTable = res.data
-        });
+      // let url = "/idea/";
+      // this.$http
+      //   .get(url, {
+      //     params: {}
+      //   })
+      //   .then(res => {
+      //     console.log(res);
+      //     // this.orderTable = res.data
+      //   });
     },
     // 选中地址
     selectAddr(item) {
@@ -174,7 +185,7 @@ export default {
         addr: item.addr
       };
       this.addr = item.addr;
-      console.log(this.addr);
+      // console.log(this.addr);
     },
 
     // 调用支付宝接口
@@ -193,7 +204,7 @@ export default {
           }
         })
         .then(res => {
-          console.log(res);
+          // console.log(res);
           const div = document.createElement("div");
           div.innerHTML = res.data; //此处form就是后台返回接收到的数据
           document.body.appendChild(div);

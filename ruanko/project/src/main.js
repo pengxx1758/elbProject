@@ -11,6 +11,14 @@ import storage from 'good-storage'
 import qs from 'qs';
 // Vue.config.productionTip = false;
 
+// axios.interceptors.response.use(res=>{
+//   console.log(res)
+//   if(res.status == '400'){
+        
+//   }
+//   return res;
+// })
+
 let bus = new Vue()
 Vue.prototype.$bus= bus
 Vue.prototype.$store = store

@@ -23,9 +23,19 @@
         <el-table-column prop="orderStatus" label="订单状态" width="180"></el-table-column>
         <el-table-column prop="orderAction" label="操作">
           <template slot-scope="scope">
-
-            <el-button  type="success" size="mini" @click="receiveOrder(scope.$index, scope.row.orderId)">接单</el-button>
-            <el-button type="danger" size="mini" @click="cancelOrder">退单</el-button>
+            <!-- 1已付款 -->
+            <el-button v-if="scope.row.orderState == '1'" type="success" size="mini" @click="receiveOrder(scope.$index, scope.row.orderId)">接单</el-button>
+            <el-button v-if="scope.row.orderState == '1'" type="danger" size="mini" @click="cancelOrder">取消订单</el-button>
+            <!-- 2已接单 -->
+            <el-button v-if="scope.row.orderState == '2'" type="danger" size="mini" @click="cancelOrder">取消订单</el-button>
+            <!-- 3请求催单 -->
+            <el-button v-if="scope.row.orderState == '3'" type="success" size="mini">回复</el-button>
+            <!-- 4申请退单 -->
+            <el-button v-if="scope.row.orderState == '4'" type="info" size="mini">联系客户</el-button>
+            <el-button v-if="scope.row.orderState == '4'" type="success" size="mini">同意</el-button>
+            <el-button v-if="scope.row.orderState == '4'" type="danger" size="mini">拒绝</el-button>
+            <!-- 5已完成订单 -->
+            <!-- 6已完成退单 -->
           </template>
         </el-table-column>
       </el-table>
@@ -125,7 +135,7 @@ export default {
           //     console.log(index,el);
           //   })
           res.data.message.forEach((el,index) => {
-            // console.log(index,el);
+            console.log(index,el);
             const item = {
               orderId: el.id,
               orderTime: this.getDate(el.create_time),
@@ -140,6 +150,7 @@ export default {
           this.loading = false;
         });
     },
+    // 商家家接单
     receiveOrder(index, id) {
       // 接单请求
       let url = "/idea/receiveOrdered";
@@ -179,7 +190,7 @@ export default {
     getOrderState(state) {
       switch (state) {
         case "0":
-          return "未接单";
+          return "未付款";
         case "1":
           return "已付款";
         case "2":
