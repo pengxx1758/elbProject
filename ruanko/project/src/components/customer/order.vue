@@ -26,8 +26,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="orderPay" label="支付金额" width="180"></el-table-column>
-        <el-table-column prop="orderStatus" label="订单状态" width="180"></el-table-column>
-        <el-table-column prop="orderAction" label="操作">
+        <el-table-column prop="orderStatus" label="订单状态" width="80"></el-table-column>
+        <el-table-column prop="orderAction" label="操作" >
           <template slot-scope="scope">
             <!-- 0未付款 -->
             <el-button type="success" v-if="scope.row.orderStated == '0'" size="mini" @click="payOrder">去付款</el-button>
@@ -35,13 +35,13 @@
             <el-button type="danger" v-if="scope.row.orderStated == '1'" size="mini" @click="cancelOrder">取消订单</el-button>
             <!-- 2已接单 -->
             <el-button type="success" v-if="scope.row.orderStated == '2'" size="mini" >催单</el-button>
-            <el-button type="danger" v-if="scope.row.orderStated == '2'" size="mini" @click="cancelOrder">请求退单</el-button>
+            <el-button type="danger" v-if="scope.row.orderStated == '2'" size="mini">请求退单</el-button>
             <el-button type="danger" v-if="scope.row.orderStated == '2'" size="mini" >确认送达</el-button>
             <!-- 3请求催单 -->
-            <el-button  type="info" v-if="scope.row.orderStated == '3'" size="mini" @click="cancelOrder">联系商家</el-button>
-            <el-button type="danger" v-if="scope.row.orderStated == '2'" size="mini" >确认送达</el-button>
+            <el-button  type="info" v-if="scope.row.orderStated == '3'" size="mini">联系商家</el-button>
+            <el-button type="danger" v-if="scope.row.orderStated == '3'" size="mini" >确认送达</el-button>
             <!-- 4申请退单 -->
-            <el-button type="info" v-if="scope.row.orderStated == '4'" size="mini" @click="cancelOrder">联系商家</el-button>
+            <el-button type="info" v-if="scope.row.orderStated == '4'" size="mini">联系商家</el-button>
             <!-- 5已完成订单 -->
             <el-button type="info" v-if="scope.row.orderStated == '5'" size="mini" @click="orderDetail(scope.$index, scope.row)">订单详情</el-button>
             <el-button type="success" v-if="scope.row.orderStated == '5'" size="mini">再来一单</el-button>
@@ -162,7 +162,7 @@ export default {
       let url = "/idea/cancelOrder";
       this.$http.get(url,{
         params:{
-          id:orderId,
+          oid:orderId,
         }
       })
       .then(res => {

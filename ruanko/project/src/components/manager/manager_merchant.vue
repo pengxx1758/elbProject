@@ -63,7 +63,7 @@ export default {
       // 总条数，根据接口获取数据长度(注意：这里不能为空)
       //   totalCount: 1,
       // 默认每页显示的条数（可修改）
-      PageSize: 10,
+      PageSize: 6,
 
       loading: true
     };
@@ -74,7 +74,7 @@ export default {
       this.$http
         .get(url, {})
         .then(res => {
-          // console.log(res);
+          console.log(res);
           this.tableData = res.data.merchant;
           this.loading = false;
         })
@@ -93,7 +93,7 @@ export default {
             this.$http
             .get(url, {
                 params: {
-                aid: this.$session.getItem('aid'),
+                aid: this.$session.get('aid'),
                 mid: row.id,
                 mlock: row.mLock
                 }
@@ -124,7 +124,7 @@ export default {
             this.$http
             .get(url, {
                 params: {
-                aid: this.$session.getItem('aid'),
+                aid: this.$session.get('aid'),
                 mid: row.id,
                 mlock: row.mLock
                 }

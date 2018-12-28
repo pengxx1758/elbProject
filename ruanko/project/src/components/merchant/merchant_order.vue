@@ -160,7 +160,13 @@ export default {
         }
       })
       .then(res => {
-        console.log(res);
+        
+        // console.log(res);
+        this.$message({
+          type: 'success',
+          message: '接单成功'
+        })
+        this.tableData[index].orderState = '2'
       })
     },
     cancelOrder(id){

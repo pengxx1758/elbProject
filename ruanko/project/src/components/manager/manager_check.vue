@@ -69,7 +69,7 @@ export default {
   name: "manager_check",
   created() {
     this.getTableData();
-    this.aid = this.$session.getItem('aid')
+    this.aid = this.$session.get('aid');
   },
   computed: {
     // tableData: function(){

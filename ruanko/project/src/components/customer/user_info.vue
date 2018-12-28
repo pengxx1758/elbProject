@@ -58,6 +58,7 @@
 export default {
   name: "user_info",
   created() {
+    this.getData();
     this.getRencenOrder();
     // console.log(this.getAllNumber('菜品1,1;菜品2,2;'));
   },
@@ -70,6 +71,21 @@ export default {
     };
   },
   methods: {
+    getData(){
+      let url = "/idea/findCustmerMessager";
+      this.$http.get(url,{
+        params:{
+          id: this.$session.get('uid'),
+        }
+      })
+      .then(res => {
+        // console.log(res);
+        if(res.data.customer.headAddr != null){
+          this.imageUrl = res.data.customer.headAddr;
+        }
+        // if(res.data.)
+      })
+    },
     // 获得最新的三条订单信息
     getRencenOrder(){
       let url = '/idea/return3LastOrder';
@@ -150,7 +166,7 @@ export default {
         .get(url, {
           params: {
             id: this.$session.get("uid"),
-            head_addr: res.fileName
+            headAddr: res.fileName
           }
         })
         .then(res => {
