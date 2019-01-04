@@ -1,10 +1,11 @@
-# elbProject
-请预先安装npm,最好是cnpm
+#请预先安装npm,最好是cnpm
 
-
-> 安装npm组件
+> 安装组件依赖及第三方包
 
 npm install 或 cnpm install
+
+npm install good-stroage --save
+
 
 > 启动服务器
 
