@@ -4,9 +4,6 @@
 
 npm install 或 cnpm install
 
-npm install good-stroage --save
-
-
 > 启动服务器
 
 npm run dev
